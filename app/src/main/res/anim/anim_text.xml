@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--该类Animations提供了旋转、移动、伸展和淡出等效果。
+Alpha——淡入淡出，Scale——缩放效果，Rotate——旋转，
+Translate——移动效果。-->
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--fromAlpha和toAlpha是起始透明度和结束时透明度-->
+    <alpha
+        android:duration="1000"
+        android:fromAlpha="0.0"
+        android:toAlpha="1.0" />
+    <!--起始x坐标
+    起始y坐标
+    x的缩放
+    y的缩放-->
+    <scale
+        android:duration="800"
+        android:fromXScale="1.5"
+        android:fromYScale="1.5"
+        android:pivotX="50%"
+        android:pivotY="50%"
+        android:toXScale="1.0"
+        android:toYScale="1.0" />
+</set>
