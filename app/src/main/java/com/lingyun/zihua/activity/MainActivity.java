@@ -1,5 +1,7 @@
 package com.lingyun.zihua.activity;
 
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
@@ -14,6 +16,7 @@ import com.lingyun.zihua.base.BaseActivity;
 import com.lingyun.zihua.fragement.MyFragement;
 import com.lingyun.zihua.fragement.ShouYeFragement;
 import com.lingyun.zihua.other.ActivityCollector;
+import com.lingyun.zihua.receiver.NetWorkChangerReceiver;
 
 /**
  * 主界面
@@ -37,7 +40,28 @@ public class MainActivity extends BaseActivity {
         initToolbar();
         //初始化view
         initView();
+        //注册服务
+        if (mReceiver != null && mFilter != null) {
+            registerReceiver(mReceiver, mFilter);
+        } else {
+            mReceiver = new NetWorkChangerReceiver();
+            mFilter = new IntentFilter();
+            mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+            registerReceiver(mReceiver, mFilter);
+        }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (mReceiver != null) {
+            unregisterReceiver(mReceiver);
+        }else {
+            mReceiver = new NetWorkChangerReceiver();
+            unregisterReceiver(mReceiver);
+        }
+    }
+
     //再按一次退出
     // 双击退出
     private long exitTime = 0;

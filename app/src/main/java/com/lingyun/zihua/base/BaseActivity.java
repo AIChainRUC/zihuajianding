@@ -3,7 +3,9 @@ package com.lingyun.zihua.base;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -18,10 +20,13 @@ import android.view.MenuItem;
 
 import com.lingyun.zihua.interfaceMy.PermissionListener;
 import com.lingyun.zihua.other.ActivityCollector;
+import com.lingyun.zihua.receiver.NetWorkChangerReceiver;
 import com.lingyun.zihua.util.ToasUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import okhttp3.OkHttpClient;
 
 /**
  * 基类
@@ -32,10 +37,17 @@ public class BaseActivity  extends AppCompatActivity{
     public ActionBar actionBar;
     //权限监听回调器
     private static PermissionListener mPermissionListener;
+    protected NetWorkChangerReceiver mReceiver;
+    protected OkHttpClient mOkHttpClient;
+    protected IntentFilter mFilter;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("");
+        mOkHttpClient=new OkHttpClient();
+        mReceiver=new NetWorkChangerReceiver();
+        mFilter=new IntentFilter();
+        mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         ActivityCollector.addActivity(this);
     }
 

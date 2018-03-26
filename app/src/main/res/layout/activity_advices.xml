@@ -20,4 +20,34 @@
             android:textColor="#fff"
             android:textSize="20sp" />
     </android.support.v7.widget.Toolbar>
+    <EditText
+        android:id="@+id/edit_advice"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:background="#fff"
+        android:gravity="start"
+        android:hint="对不起，我们让您失望了，请您提出宝贵意见，让我们进步！" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="20dp" />
+
+    <EditText
+        android:id="@+id/edit_contact"
+        android:layout_width="match_parent"
+        android:layout_height="30dp"
+        android:background="#fff"
+        android:hint="您的联系方式：QQ/手机号" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp" />
+
+    <Button
+        android:id="@+id/btn_submit"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_hue"
+        android:text="提交反馈"
+        android:textColor="#fff" />
 </LinearLayout>

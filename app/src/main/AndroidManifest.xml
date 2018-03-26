@@ -3,11 +3,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.lingyun.zihua">
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
     <!--腾讯bugly需要权限开始-->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <!--腾讯bugly需要权限结束-->
     <uses-permission android:name="android.permission.READ_LOGS"
         tools:ignore="ProtectedPermissions" />
     <!--保存资源到SD卡-->
@@ -24,16 +33,18 @@
         <activity
             android:name=".activity.StartActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+
+        </activity>
+        <activity android:name=".base.BaseActivity" />
+        <activity android:name=".activity.MainActivity">
+        </activity>
+        <activity android:name=".activity.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".base.BaseActivity" />
-        <activity android:name=".activity.MainActivity">
-        </activity>
-        <activity android:name=".activity.LoginActivity" />
         <activity android:name=".activity.RegisterActivity" />
         <activity android:name=".activity.ForgetPasswordActivity" />
         <activity android:name=".activity.StoreCalligraphyActivity" />
@@ -43,6 +54,15 @@
         <activity android:name=".activity.AdvicesActivity" />
         <activity android:name=".activity.AboutUsActivity" />
         <activity android:name=".activity.UserHelp"></activity>
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="com.lingyun.zihua.fileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                 android:resource="@xml/file_paths"/>
+        </provider>
     </application>
 
 </manifest>
