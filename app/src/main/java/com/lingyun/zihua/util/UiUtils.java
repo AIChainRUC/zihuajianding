@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.os.Handler;
 import android.view.Gravity;
+import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Toast;
 
 import com.lingyun.zihua.base.BaseApplication;
@@ -19,7 +21,16 @@ public class UiUtils {
     public static Context getContext() {
         return BaseApplication.getInstance();
     }
-
+    /**
+     * 强制隐藏输入法键盘
+     *
+     * @param context Context
+     * @param view    EditText
+     */
+    public static void hideInput(Context context, View view) {
+        InputMethodManager inputMethodManager = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+        inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
+    }
     /**
      * dip转换px
      */

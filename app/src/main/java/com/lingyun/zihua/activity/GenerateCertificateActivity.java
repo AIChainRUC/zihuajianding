@@ -2,7 +2,9 @@ package com.lingyun.zihua.activity;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
@@ -10,11 +12,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,6 +29,8 @@ import android.widget.Spinner;
 
 import com.lingyun.zihua.R;
 import com.lingyun.zihua.base.BaseActivity;
+import com.lingyun.zihua.base.BaseAsyTask;
+import com.lingyun.zihua.constants.URLConstants;
 import com.lingyun.zihua.interfaceMy.PermissionListener;
 import com.lingyun.zihua.receiver.NetWorkChangerReceiver;
 import com.lingyun.zihua.util.LogUtils;
@@ -32,13 +38,25 @@ import com.lingyun.zihua.util.OSutil;
 import com.lingyun.zihua.util.RegularUtil;
 import com.lingyun.zihua.util.UiUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 /**
  * GenerateCertificateActivity 实现生成证书的功能
  */
-public class GenerateCertificateActivity extends BaseActivity implements View.OnClickListener{
+public class GenerateCertificateActivity extends BaseActivity implements View.OnClickListener {
     //Toolbar相关
     private Toolbar toolbar;
     private EditText generate_name_edt;
@@ -59,6 +77,12 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     public static final int SELECT_PIC_BY_TACK_PHOTO = 1;
     //裁剪图片
     private static final int CROP_PICTURE = 3;
+    private String generateFaceFeature = null;//人脸特征
+    private String generatePublicKey = null;//公钥
+    private String generatePrivateKey = null;//公钥
+    private String generateCertificate=null;//证书
+    private Bitmap bitmap;
+    private AsyGenerateFace asyGenerateFace;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -75,6 +99,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             registerReceiver(mReceiver, mFilter);
         }
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -85,27 +110,28 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             unregisterReceiver(mReceiver);
         }
     }
+
     private void initView() {
-        generate_name_edt=(EditText)findViewById(R.id.generate_name_edt);
-        generate_gender_spinner=(Spinner)findViewById(R.id.generate_gender_spinner);
+        generate_name_edt = (EditText) findViewById(R.id.generate_name_edt);
+        generate_gender_spinner = (Spinner) findViewById(R.id.generate_gender_spinner);
         generate_gender_spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                generate_gender_string=generate_gender_spinner.getItemAtPosition(position).toString();
+                generate_gender_string = generate_gender_spinner.getItemAtPosition(position).toString();
                 //UiUtils.show(generate_gender_string);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                generate_gender_string="男";
+                generate_gender_string = "男";
             }
         });
-        generate_date_edt =(EditText)findViewById(R.id.generate_date_edt);
-        generate_submit_btn=(Button)findViewById(R.id.generate_submit_btn);
+        generate_date_edt = (EditText) findViewById(R.id.generate_date_edt);
+        generate_submit_btn = (Button) findViewById(R.id.generate_submit_btn);
         generate_submit_btn.setOnClickListener(this);
-        generate_camera=(Button)findViewById(R.id.generate_camera);
+        generate_camera = (Button) findViewById(R.id.generate_camera);
         generate_camera.setOnClickListener(this);
-        generate_ima=(ImageView)findViewById(R.id.generate_ima);
+        generate_ima = (ImageView) findViewById(R.id.generate_ima);
     }
 
     private void initToolbar() {
@@ -118,28 +144,45 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 
     @Override
     public void onClick(View v) {
-        if(v.getId()==R.id.generate_submit_btn){
-            generate_name_string=generate_name_edt.getText().toString().trim();//获取姓名
-            generate_date_string=generate_date_edt.getText().toString();
+        if (v.getId() == R.id.generate_submit_btn) {
+            generate_name_string = generate_name_edt.getText().toString().trim();//获取姓名
+            generate_date_string = generate_date_edt.getText().toString();
             //Log.d("hjs",generate_date_string);
-            if(!RegularUtil.isValidDate(generate_date_string)){
-                UiUtils.show("对不起，您输入的日期非法，请重新输入");
-                generate_date_edt.setText("");
+            if (TextUtils.isEmpty(generate_name_string)) {
+                UiUtils.show("对不起，请输入姓名");
+            } else {
+                if (!RegularUtil.isValidDate(generate_date_string)) {
+                    UiUtils.show("对不起，您输入的日期非法，请重新输入");
+                    generate_date_edt.setText("");
+                } else {
+                    if (TextUtils.isEmpty(generateFaceFeature)) {
+                        UiUtils.show("请先上传人脸照片");
+                    } else {
+                        new AsyCreateCertificate(GenerateCertificateActivity.this,
+                                "CreateCertificate",
+                                generateFaceFeature,
+                                generate_name_string,
+                                generate_date_string,
+                                generate_gender_string).execute();
+                    }
+                }
             }
-        }else if(v.getId()==R.id.generate_camera){//拍照上传
-            BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA,Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
+        } else if (v.getId() == R.id.generate_camera) {//拍照上传
+            BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                 @Override
                 public void onGranted() {
+                    UiUtils.hideInput(GenerateCertificateActivity.this,generate_date_edt);
                     takePictures();//打开相机拍照
                 }
 
                 @Override
                 public void onDenied(List<String> deniedPermission) {
-                    dialog(GenerateCertificateActivity.this,"上传照片需要该权限，拒绝后将不能正常使用，是否重新开启此权限？");
+                    dialog(GenerateCertificateActivity.this, "上传照片需要该权限，拒绝后将不能正常使用，是否重新开启此权限？");
                 }
             });
         }
     }
+
     //Activity的回调方法
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -159,10 +202,11 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     photoUri = Uri.fromFile(new File(picPath));
                     if (photoUri != null) {
-                        Bitmap bitmap = BitmapFactory.decodeFile(picPath);
+                        bitmap = BitmapFactory.decodeFile(picPath);
                         if (bitmap != null) {
-                            generate_ima.setVisibility(View.VISIBLE);
-                            generate_ima.setImageBitmap(bitmap);
+                            //file=new File(picPath);
+                            asyGenerateFace=new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath);
+                            asyGenerateFace.execute();
                         }
                     }
 //                    if (Build.VERSION.SDK_INT > 23) {
@@ -186,6 +230,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 //            }
         }
     }
+
     /**
      * 图片裁剪，参数根据自己需要设置
      *
@@ -212,6 +257,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         intent.putExtra("return-data", false);//设置为不返回数据
         startActivityForResult(intent, REQUE_CODE_CROP);
     }
+
     /**
      * 7.0以上版本图片裁剪操作
      *
@@ -261,17 +307,118 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             }
         }
     }
+
     //打开相机拍照
     private void takePictures() {
         //执行拍照前，应该先判断SD卡是否存在
-        if(OSutil.isSdExist()){
+        if (OSutil.isSdExist()) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
             ContentValues values = new ContentValues();
             photoUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
             intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
             startActivityForResult(intent, SELECT_PIC_BY_TACK_PHOTO);
-        }else {
+        } else {
             UiUtils.show("对不起，您的手机的SD卡未插入，不能使用该功能");
+        }
+    }
+
+    public class AsyGenerateFace extends BaseAsyTask {
+        private String status = "-1";
+
+        public AsyGenerateFace(Context context, String string, String... params) {
+            super(context, string, params);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                response = okHttpClient.newCall(request).execute();
+                string = response.body().string();
+                jsonObject = new JSONObject(string);
+                status = jsonObject.optString("code");
+                generateFaceFeature = jsonObject.optString("feature");
+                //LogUtils.d("status", status);
+                //LogUtils.d("status", generateFaceFeature);
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return status;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (TextUtils.equals(s, "200")) {//200说明人脸识别成功
+                UiUtils.show("人脸识别成功");
+                generate_ima.setVisibility(View.VISIBLE);
+                generate_ima.setImageBitmap(bitmap);
+                generate_camera.setVisibility(View.INVISIBLE);
+            } else if (TextUtils.equals(s, "-1")) {
+                UiUtils.show("网络超时，请重试");
+                generate_camera.setText("重新上传");
+                generate_camera.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        asyGenerateFace=new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath);
+                        asyGenerateFace.execute();
+                    }
+                });
+            } else {
+                UiUtils.show("人脸识别失败，请重试");
+            }
+        }
+    }
+
+    public class AsyCreateCertificate extends BaseAsyTask {
+        private String status = "-1";
+
+        public AsyCreateCertificate(Context context, String string, String... params) {
+            super(context, string, params);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (TextUtils.equals(s, "200")) {//200说明人脸识别成功
+                UiUtils.show("证书生成成功");
+                finish();
+            } else if (TextUtils.equals(s, "-1")) {
+                UiUtils.show("网络超时，请重试");
+            } else {
+                UiUtils.show("证书生成失败，请重试");
+            }
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                if (okHttpClient != null) {
+                    response = okHttpClient.newCall(request).execute();
+                }
+                string = response.body().string();
+                jsonObject = new JSONObject(string);
+                status = jsonObject.optString("code");
+                generatePublicKey = jsonObject.optString("publicKey");
+                generatePrivateKey = jsonObject.optString("privateKey");
+                generateCertificate=jsonObject.getString("certificate");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return status;
         }
     }
 }

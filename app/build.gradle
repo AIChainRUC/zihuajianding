@@ -3,6 +3,7 @@ apply plugin: 'bugly'
 bugly {
     appId = '<8d5b7b67b2>' // 注册时分配的App ID
     appKey = '<c48b2826-caec-4aaa-bc57-362a46fecd0f>' // 注册时分配的App Key
+    debug = true
 }
 android {
     compileSdkVersion 27

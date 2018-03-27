@@ -40,6 +40,7 @@ public class BaseActivity  extends AppCompatActivity{
     protected NetWorkChangerReceiver mReceiver;
     protected OkHttpClient mOkHttpClient;
     protected IntentFilter mFilter;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
