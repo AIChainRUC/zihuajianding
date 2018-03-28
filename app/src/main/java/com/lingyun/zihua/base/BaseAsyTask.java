@@ -2,17 +2,19 @@ package com.lingyun.zihua.base;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import com.lingyun.zihua.constants.URLConstants;
-import com.lingyun.zihua.util.LogUtils;
 
 import org.json.JSONObject;
 
 import java.io.File;
-import java.lang.annotation.Target;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
+import id.zelory.compressor.Compressor;
 import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -41,41 +43,49 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     protected String string;
     protected JSONObject jsonObject;
     protected final MediaType MEDIA_TYPE_JPG = MediaType.parse("image/jpeg");
-    protected File file;
     //人脸
     private String generateFace;
     private String faceFeature;
     private String userName;
     private String userGender;
     private String userDate;
-    public BaseAsyTask(){
+    private File fileTemp;
+    private File file;
+
+    public BaseAsyTask() {
 
     }
+
     public BaseAsyTask(Context context, String TAG, String... params) {
         this.context = context;
         this.TAG = TAG;
         switch (TAG) {
             case "GenerateFace":
-                generateFace = params[0];//文件的路径
-                URL= URLConstants.ServerURL+URLConstants.AIPort+URLConstants.FaceURL;
-                dialogInfo="人脸识别中，请稍候...";
+                generateFace = params[0];//图片的内容
+                //builder.add("im1", generateFace);
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.FaceURL;
+                dialogInfo = "人脸识别中，请稍候...";
                 break;
             case "CreateCertificate":
-                faceFeature=params[0];
-                userName=params[1];
-                userDate=params[2];
-                userGender=params[3];
-                URL= URLConstants.ServerURL+URLConstants.BlockPort+URLConstants.CreateCertificateURL;
-                dialogInfo="数字证书生成中，请稍候...";
-                String desc=userName+" "+userGender+" "+" "+userDate;
+                faceFeature = params[0];
+                userName = params[1];
+                userDate = params[2];
+                userGender = params[3];
+                URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.CreateCertificateURL;
+                dialogInfo = "数字证书生成中，请稍候...";
+                String desc = userName + " " + userGender + " " + " " + userDate;
                 //LogUtils.d("hjs",desc);
-                builder.add("feature",faceFeature);
-                builder.add("desc",desc);
+                builder.add("feature", faceFeature);
+                builder.add("desc", desc);
                 break;
             default:
                 break;
         }
-        okHttpClient=new OkHttpClient();
+        okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(5 * 1000, TimeUnit.MILLISECONDS)//链接超时;
+                .readTimeout(10 * 1000, TimeUnit.MILLISECONDS) //读取超时
+                .writeTimeout(10 * 1000, TimeUnit.MILLISECONDS) //写入超时
+                .build();
     }
 
     @Override
@@ -86,17 +96,28 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
         pDialog.setCancelable(false);
         pDialog.setIndeterminate(false);
         pDialog.show();
-        if(TextUtils.equals(TAG,"GenerateFace")){
-            file=new File(generateFace);
-            fileBody=new MultipartBody.Builder()
+//        request = new Request.Builder()
+//                .url(URL)
+//                .post(builder.build())
+//                .addHeader("Connection", "close")
+//                .build();
+        if (TextUtils.equals(TAG, "GenerateFace")) {
+            try {
+                fileTemp = new File(generateFace);
+                file = new Compressor(context).compressToFile(fileTemp);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            fileBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
-                    .addFormDataPart("im1",generateFace,RequestBody.create(MEDIA_TYPE_JPG,file))
+                    .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                     .build();
-            request=new Request.Builder().url(URL).post(fileBody).build();
-        }else if(TextUtils.equals(TAG,"CreateCertificate")){
+            request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+        } else if (TextUtils.equals(TAG, "CreateCertificate")) {
             request = new Request.Builder()
                     .url(URL)
                     .post(builder.build())
+                    .addHeader("Connection", "close")
                     .build();
         }
     }

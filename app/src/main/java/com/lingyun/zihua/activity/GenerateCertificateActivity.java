@@ -1,6 +1,7 @@
 package com.lingyun.zihua.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.ContentValues;
@@ -26,6 +27,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import com.lingyun.zihua.R;
 import com.lingyun.zihua.base.BaseActivity;
@@ -33,6 +35,7 @@ import com.lingyun.zihua.base.BaseAsyTask;
 import com.lingyun.zihua.constants.URLConstants;
 import com.lingyun.zihua.interfaceMy.PermissionListener;
 import com.lingyun.zihua.receiver.NetWorkChangerReceiver;
+import com.lingyun.zihua.util.ButtonUtil;
 import com.lingyun.zihua.util.LogUtils;
 import com.lingyun.zihua.util.OSutil;
 import com.lingyun.zihua.util.RegularUtil;
@@ -41,17 +44,14 @@ import com.lingyun.zihua.util.UiUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
 
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
+import id.zelory.compressor.Compressor;
 
 /**
  * GenerateCertificateActivity 实现生成证书的功能
@@ -67,22 +67,24 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     private String generate_date_string;
     private Button generate_submit_btn;
     private Button generate_camera;
-    private ImageView generate_ima;
+    //private ImageView generate_ima;
+    private TextView generate_text;
     private static final int PERMISSIONS_FOR_TAKE_PHOTO = 10;
     //图片文件路径
     private String picPath;
     //图片对应Uri
     private Uri photoUri;
+    private String picContent;//图片转为字符数组后的内容
     //拍照对应RequestCode
     public static final int SELECT_PIC_BY_TACK_PHOTO = 1;
     //裁剪图片
     private static final int CROP_PICTURE = 3;
-    private String generateFaceFeature = null;//人脸特征
+    private String generateFaceFeature;//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//公钥
-    private String generateCertificate=null;//证书
+    private String generateCertificate = null;//证书
     private Bitmap bitmap;
-    private AsyGenerateFace asyGenerateFace;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,7 +133,8 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         generate_submit_btn.setOnClickListener(this);
         generate_camera = (Button) findViewById(R.id.generate_camera);
         generate_camera.setOnClickListener(this);
-        generate_ima = (ImageView) findViewById(R.id.generate_ima);
+        //generate_ima = (ImageView) findViewById(R.id.generate_ima);
+        generate_text=(TextView)findViewById(R.id.generate_text);
     }
 
     private void initToolbar() {
@@ -148,22 +151,26 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             generate_name_string = generate_name_edt.getText().toString().trim();//获取姓名
             generate_date_string = generate_date_edt.getText().toString();
             //Log.d("hjs",generate_date_string);
-            if (TextUtils.isEmpty(generate_name_string)) {
-                UiUtils.show("对不起，请输入姓名");
+            if (ButtonUtil.isFastDoubleClick()) {
+                UiUtils.show("您点击过快，请稍候再试");
             } else {
-                if (!RegularUtil.isValidDate(generate_date_string)) {
-                    UiUtils.show("对不起，您输入的日期非法，请重新输入");
-                    generate_date_edt.setText("");
+                if (TextUtils.isEmpty(generate_name_string)) {
+                    UiUtils.show("对不起，请输入姓名");
                 } else {
-                    if (TextUtils.isEmpty(generateFaceFeature)) {
-                        UiUtils.show("请先上传人脸照片");
+                    if (!RegularUtil.isValidDate(generate_date_string)) {
+                        UiUtils.show("对不起，您输入的日期非法，请重新输入");
+                        generate_date_edt.setText("");
                     } else {
-                        new AsyCreateCertificate(GenerateCertificateActivity.this,
-                                "CreateCertificate",
-                                generateFaceFeature,
-                                generate_name_string,
-                                generate_date_string,
-                                generate_gender_string).execute();
+                        if (TextUtils.isEmpty(generateFaceFeature)) {
+                            UiUtils.show("请先上传人脸照片");
+                        } else {
+                            new AsyCreateCertificate(GenerateCertificateActivity.this,
+                                    "CreateCertificate",
+                                    generateFaceFeature,
+                                    generate_name_string,
+                                    generate_date_string,
+                                    generate_gender_string).execute();
+                        }
                     }
                 }
             }
@@ -171,7 +178,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                 @Override
                 public void onGranted() {
-                    UiUtils.hideInput(GenerateCertificateActivity.this,generate_date_edt);
+                    UiUtils.hideInput(GenerateCertificateActivity.this, generate_date_edt);
                     takePictures();//打开相机拍照
                 }
 
@@ -202,12 +209,9 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     photoUri = Uri.fromFile(new File(picPath));
                     if (photoUri != null) {
-                        bitmap = BitmapFactory.decodeFile(picPath);
-                        if (bitmap != null) {
-                            //file=new File(picPath);
-                            asyGenerateFace=new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath);
-                            asyGenerateFace.execute();
-                        }
+                        //bitmap = BitmapFactory.decodeFile(picPath);
+                        new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+                        //new AsyImageToStr().execute();
                     }
 //                    if (Build.VERSION.SDK_INT > 23) {
 //                        photoUri = FileProvider.getUriForFile(this, "com.lingyun.zihua.fileprovider", new File(picPath));
@@ -322,8 +326,40 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         }
     }
 
+//    public class AsyImageToStr extends AsyncTask<String, String, String> {
+//        File file;
+//        ProgressDialog pDialog;
+//
+//        @Override
+//        protected String doInBackground(String... strings) {
+//            picContent = getToString(getFileByte(file));
+//            return picContent;
+//        }
+//
+//        @Override
+//        protected void onPreExecute() {
+//            super.onPreExecute();
+//            pDialog = new ProgressDialog(GenerateCertificateActivity.this);
+//            pDialog.setMessage("图片正在处理中");
+//            pDialog.setCancelable(false);
+//            pDialog.setIndeterminate(false);
+//            pDialog.show();
+//            file = new File(picPath);
+//        }
+//
+//        @Override
+//        protected void onPostExecute(String s) {
+//            super.onPostExecute(s);
+//            if (!TextUtils.isEmpty(s)) {
+//                pDialog.dismiss();
+//
+//            }
+//        }
+//    }
+
     public class AsyGenerateFace extends BaseAsyTask {
         private String status = "-1";
+        private File mFile;
 
         public AsyGenerateFace(Context context, String string, String... params) {
             super(context, string, params);
@@ -346,32 +382,53 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 //LogUtils.d("status", generateFaceFeature);
             } catch (IOException e) {
                 e.printStackTrace();
+                //LogUtils.d("hjs",e.toString());
             } catch (JSONException e) {
                 e.printStackTrace();
             }
             return status;
         }
 
+        @SuppressLint("ResourceAsColor")
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (TextUtils.equals(s, "200")) {//200说明人脸识别成功
                 UiUtils.show("人脸识别成功");
-                generate_ima.setVisibility(View.VISIBLE);
-                generate_ima.setImageBitmap(bitmap);
+                //generate_ima.setVisibility(View.VISIBLE);
+                //generate_ima.setImageBitmap(bitmap);
                 generate_camera.setVisibility(View.INVISIBLE);
+                generate_text.setText("照片上传成功，请提交");
+                generate_text.setTextColor(R.color.colorAccent);
+                generate_text.setVisibility(View.VISIBLE);
+                mFile = new File(picPath);
+                mFile.delete();
             } else if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
                 generate_camera.setText("重新上传");
                 generate_camera.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        asyGenerateFace=new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath);
-                        asyGenerateFace.execute();
+                        if(ButtonUtil.isFastDoubleClick()){
+                            UiUtils.show("您的操作过于频繁，请稍候再试");
+                        }else{
+                            new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+                        }
                     }
                 });
             } else {
                 UiUtils.show("人脸识别失败，请重试");
+                generate_camera.setText("重新上传");
+                generate_camera.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(ButtonUtil.isFastDoubleClick()){
+                            UiUtils.show("您的操作过于频繁，请稍候再试");
+                        }else{
+                            new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+                        }
+                    }
+                });
             }
         }
     }
@@ -412,7 +469,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 status = jsonObject.optString("code");
                 generatePublicKey = jsonObject.optString("publicKey");
                 generatePrivateKey = jsonObject.optString("privateKey");
-                generateCertificate=jsonObject.getString("certificate");
+                generateCertificate = jsonObject.getString("certificate");
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
@@ -420,5 +477,36 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             }
             return status;
         }
+    }
+
+    byte[] byt;
+
+    //图片转为字节流
+    public byte[] getFileByte(File file) {
+        try {
+            File compressedImageFile = new Compressor(this).compressToFile(file);
+            FileInputStream fis = new FileInputStream(compressedImageFile);
+            byt = new byte[(int) compressedImageFile.length()];
+            fis.read(byt, 0, byt.length);
+            fis.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return byt;
+    }
+
+    //字符数组转化为字符串
+    public String getToString(byte[] arrayData) {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < arrayData.length; i++) {
+            stringBuilder.append(arrayData[i]);
+            if (i < arrayData.length - 1) {
+                stringBuilder.append(",");
+            }
+        }
+        return stringBuilder.toString();
     }
 }
