@@ -113,16 +113,14 @@
             android:background="@color/main_hue"
             android:text="拍照"
             android:textColor="#fff" />
-
         <TextView
             android:id="@+id/generate_text"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginLeft="30dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="30dp"
-            android:text="郝俊生"/>
+            android:visibility="gone"
+            android:gravity="center"
+            android:textColor="@color/main_hue" />
     </LinearLayout>
     <!--<ImageView-->
     <!--android:id="@+id/generate_ima"-->
@@ -142,7 +140,7 @@
         android:layout_marginTop="10dp"
         android:layout_marginRight="30dp"
         android:background="@color/main_hue"
-        android:text="提交"
+        android:text="生成证书"
         android:textColor="#fff" />
 
     <View

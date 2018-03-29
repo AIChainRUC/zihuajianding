@@ -397,9 +397,8 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 UiUtils.show("人脸识别成功");
                 //generate_ima.setVisibility(View.VISIBLE);
                 //generate_ima.setImageBitmap(bitmap);
-                generate_camera.setVisibility(View.INVISIBLE);
-                generate_text.setText("照片上传成功，请提交");
-                generate_text.setTextColor(R.color.colorAccent);
+                generate_camera.setVisibility(View.GONE);
+                generate_text.setText("照片上传成功，可生成证书");
                 generate_text.setVisibility(View.VISIBLE);
                 mFile = new File(picPath);
                 mFile.delete();
@@ -418,14 +417,15 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 });
             } else {
                 UiUtils.show("人脸识别失败，请重试");
-                generate_camera.setText("重新上传");
+                //generate_camera.setText("重新上传");
                 generate_camera.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if(ButtonUtil.isFastDoubleClick()){
                             UiUtils.show("您的操作过于频繁，请稍候再试");
                         }else{
-                            new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+                            //new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+                            takePictures();
                         }
                     }
                 });

@@ -22,6 +22,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * author: anapodoton
@@ -85,6 +86,8 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 .connectTimeout(5 * 1000, TimeUnit.MILLISECONDS)//链接超时;
                 .readTimeout(10 * 1000, TimeUnit.MILLISECONDS) //读取超时
                 .writeTimeout(10 * 1000, TimeUnit.MILLISECONDS) //写入超时
+                .addInterceptor(new HttpLoggingInterceptor())
+                .retryOnConnectionFailure(false)
                 .build();
     }
 

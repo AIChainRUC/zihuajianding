@@ -15,7 +15,7 @@ public class BaseApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Bugly.init(getApplicationContext(), "8d5b7b67b2", false);
+        Bugly.init(getApplicationContext(), "8d5b7b67b2", true);
         application = this;
         mainTid = android.os.Process.myTid();
         handler = new Handler();

@@ -54,6 +54,7 @@
         <activity android:name=".activity.AdvicesActivity" />
         <activity android:name=".activity.AboutUsActivity" />
         <activity android:name=".activity.UserHelp"></activity>
+        <activity android:name="com.mabeijianxi.smallvideorecord2.MediaRecorderActivity"/>
         <provider
             android:name="android.support.v4.content.FileProvider"
             android:authorities="com.lingyun.zihua.fileprovider"
