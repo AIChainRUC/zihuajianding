@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
@@ -20,6 +21,7 @@ import com.lingyun.zihua.activity.LoginActivity;
 import com.lingyun.zihua.activity.UserHelp;
 import com.lingyun.zihua.base.BaseFragement;
 import com.lingyun.zihua.util.FileUtil;
+import com.lingyun.zihua.util.LogUtils;
 import com.lingyun.zihua.util.OSutil;
 import com.lingyun.zihua.util.UiUtils;
 
@@ -35,8 +37,9 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
     private RelativeLayout layout_catch;
     private TextView cahchSize;
     private Button logOut;
-    String fizeSize="0B";
+    String fizeSize = "0B";
     private Boolean isSdExist;
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -47,36 +50,37 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
     }
 
     private void initView(View mView) {
-        tv_advice=(RelativeLayout)mView.findViewById(R.id.tv_advice);
+        tv_advice = (RelativeLayout) mView.findViewById(R.id.tv_advice);
         tv_advice.setOnClickListener(this);
-        contact_our=(RelativeLayout)mView.findViewById(R.id.contact_our);
+        contact_our = (RelativeLayout) mView.findViewById(R.id.contact_our);
         contact_our.setOnClickListener(this);
-        helpRelative=(RelativeLayout)mView.findViewById(R.id.help);
+        helpRelative = (RelativeLayout) mView.findViewById(R.id.help);
         helpRelative.setOnClickListener(this);
-        logOut=(Button)mView.findViewById(R.id.logOut);
+        logOut = (Button) mView.findViewById(R.id.logOut);
         logOut.setOnClickListener(this);
-        layout_catch=(RelativeLayout)mView.findViewById(R.id.layout_cache);
+        layout_catch = (RelativeLayout) mView.findViewById(R.id.layout_cache);
         layout_catch.setOnClickListener(this);
-        cahchSize=(TextView)mView.findViewById(R.id.cache_size);
+        cahchSize = (TextView) mView.findViewById(R.id.cache_size);
         //判断SD卡是否存在
-        isSdExist= OSutil.isSdExist();
+        isSdExist = OSutil.isSdExist();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         //如果sd卡存在
-        if(isSdExist){
-            fizeSize= FileUtil.getAutoFileOrFilesSize(getActivity().getExternalCacheDir()+"/topic");
-        }else {
-            fizeSize= FileUtil.getAutoFileOrFilesSize(FileUtil.Cache);
+        if (isSdExist) {
+            fizeSize = FileUtil.getAutoFileOrFilesSize(Environment.getExternalStorageDirectory()+"/Pictures");
+            LogUtils.d("hjs", Environment.getExternalStorageDirectory()+"/Pictures");
+        } else {
+            fizeSize = FileUtil.getAutoFileOrFilesSize(FileUtil.Cache);
         }
         cahchSize.setText(fizeSize);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()){
+        switch (v.getId()) {
             case R.id.tv_advice:
                 startActivity(new Intent(getActivity(), AdvicesActivity.class));
                 break;
@@ -102,29 +106,29 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         File file;
-                        if(isSdExist){
-                            file=new File(getActivity().getExternalCacheDir()+"/topic");
-                        }else{
-                            file=new File(FileUtil.Cache);
+                        if (isSdExist) {
+                            file = new File(getActivity().getExternalCacheDir() + "/topic");
+                        } else {
+                            file = new File(FileUtil.Cache);
                         }
                         FileUtil.RecursionDeleteFile(file);//递归删除文件
-                        if(isSdExist){
-                            fizeSize=FileUtil.getAutoFileOrFilesSize(getActivity().getExternalCacheDir()+"/topic");
-                        }else {
-                            fizeSize=FileUtil.getAutoFileOrFilesSize(FileUtil.Cache);
+                        if (isSdExist) {
+                            fizeSize = FileUtil.getAutoFileOrFilesSize(getActivity().getExternalCacheDir() + "/topic");
+                        } else {
+                            fizeSize = FileUtil.getAutoFileOrFilesSize(FileUtil.Cache);
                         }
                         cahchSize.setText(fizeSize);
                         dialog.dismiss();
                     }
                 });
-                if(cahchSize.getText().equals("0B")){
+                if (cahchSize.getText().equals("0B")) {
                     UiUtils.show("您现在没有缓存哦");
-                }else {
+                } else {
                     dialog.show();
                 }
                 break;
-                default:
-                    break;
+            default:
+                break;
         }
     }
 }

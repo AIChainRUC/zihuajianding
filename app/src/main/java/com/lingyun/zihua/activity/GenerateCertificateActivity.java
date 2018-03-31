@@ -417,7 +417,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 });
             } else {
                 UiUtils.show("人脸识别失败，请重试");
-                //generate_camera.setText("重新上传");
+                generate_camera.setText("拍照");
                 generate_camera.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
