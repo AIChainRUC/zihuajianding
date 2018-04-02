@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -33,23 +35,31 @@ import okhttp3.OkHttpClient;
  * 包括顶部导航栏和运行时权限的管理
  * Activity的统一管理
  */
-public class BaseActivity  extends AppCompatActivity{
+public class BaseActivity extends AppCompatActivity {
     public ActionBar actionBar;
     //权限监听回调器
     private static PermissionListener mPermissionListener;
     protected NetWorkChangerReceiver mReceiver;
     protected OkHttpClient mOkHttpClient;
     protected IntentFilter mFilter;
-
+    protected SharedPreferences sharedPreference;
+    protected SharedPreferences.Editor editor;
+    private static final int PERMISSIONS_FOR_TAKE_PHOTO = 10;
+    //图片对应Uri
+    protected Uri photoUri;
+    //图片文件路径
+    protected String picPath;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle("");
-        mOkHttpClient=new OkHttpClient();
-        mReceiver=new NetWorkChangerReceiver();
-        mFilter=new IntentFilter();
+        mOkHttpClient = new OkHttpClient();
+        mReceiver = new NetWorkChangerReceiver();
+        mFilter = new IntentFilter();
         mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         ActivityCollector.addActivity(this);
+        sharedPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        editor = sharedPreference.edit();
     }
 
     @Override
@@ -59,6 +69,7 @@ public class BaseActivity  extends AppCompatActivity{
         }
         return super.onOptionsItemSelected(item);
     }
+
     public void dialog(final Activity activity, String info) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("提示");
@@ -82,17 +93,19 @@ public class BaseActivity  extends AppCompatActivity{
         });
         builder.create().show();
     }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         ActivityCollector.removeActivity(this);
     }
+
     //处理权限被授予或者拒绝后，需要进行的操作
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         List<String> deniedPermission;
-        switch (requestCode){
+        switch (requestCode) {
             case 1:
                 if (grantResults.length > 0) {
                     deniedPermission = new ArrayList<>();
@@ -106,7 +119,7 @@ public class BaseActivity  extends AppCompatActivity{
                     if (deniedPermission.isEmpty()) {
                         mPermissionListener.onGranted();
                     } else {
-                        if(mPermissionListener!=null)
+                        if (mPermissionListener != null)
                             mPermissionListener.onDenied(deniedPermission);
                     }
                 }
@@ -123,18 +136,18 @@ public class BaseActivity  extends AppCompatActivity{
             return;
         }
         mPermissionListener = listener;
-        List<String> permissionList=new ArrayList<>();
-        for(String permission:permissions){
+        List<String> permissionList = new ArrayList<>();
+        for (String permission : permissions) {
             //没有该权限
-            if(ContextCompat.checkSelfPermission(topActivity,permission)!=
-                    PackageManager.PERMISSION_GRANTED){
+            if (ContextCompat.checkSelfPermission(topActivity, permission) !=
+                    PackageManager.PERMISSION_GRANTED) {
                 permissionList.add(permission);
             }
         }
         //需要权限则请求授予权限
-        if(!permissionList.isEmpty()){
-            ActivityCompat.requestPermissions(topActivity,permissionList.toArray(new String[permissionList.size()]),1);
-        }else{
+        if (!permissionList.isEmpty()) {
+            ActivityCompat.requestPermissions(topActivity, permissionList.toArray(new String[permissionList.size()]), 1);
+        } else {
             mPermissionListener.onGranted();
         }
     }

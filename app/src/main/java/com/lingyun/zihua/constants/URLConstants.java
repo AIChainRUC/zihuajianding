@@ -11,4 +11,6 @@ public class URLConstants {
     public static final String BlockPort=":6174";
     public static final String FaceURL="/face";//人脸特征提取
     public static final String CreateCertificateURL="/channels/mychannel/chaincodes/urcc/createCertificate";//生成数字证书
+    public static final String CreateAssetURL="/channels/mychannel/chaincodes/urcc/createAsset";//字画存链
+    public static final String SaveURL="/save";//印章特征提取
 }

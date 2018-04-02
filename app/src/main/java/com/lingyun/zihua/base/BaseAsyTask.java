@@ -52,6 +52,14 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     private String userDate;
     private File fileTemp;
     private File file;
+    private String desc = null;//书画基本信息
+    private String delcare = null;//制式声明
+    private String featureSeal = null;//印章的特征值
+    private String picHash;//画全图的哈希值
+    private String sig_r; //ecbsa签名_r
+    private String sig_s;//ecbsa签名_s
+    private String authorPUBKEY;//作家公钥
+    private String defaultGrain = "0";//印章图片是否考虑纹理，值为0或1
 
     public BaseAsyTask() {
 
@@ -74,10 +82,34 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 userGender = params[3];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.CreateCertificateURL;
                 dialogInfo = "数字证书生成中，请稍候...";
-                String desc = userName + " " + userGender + " " + " " + userDate;
+                desc = userName + " " + userGender + " " + " " + userDate;
                 //LogUtils.d("hjs",desc);
                 builder.add("feature", faceFeature);
                 builder.add("desc", desc);
+                break;
+            case "StoreCalligraphy":
+                desc = params[0];
+                authorPUBKEY = params[1];
+                delcare = params[2];
+                featureSeal = params[3];
+                picHash = params[4];
+                sig_r = params[5];
+                sig_s = params[6];
+                URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.CreateAssetURL;
+                dialogInfo = "字画存链中，请稍候...";
+                builder.add("desc", desc);
+                builder.add("authorPUBKEY", authorPUBKEY);
+                builder.add("delcare", delcare);
+                builder.add("feature", featureSeal);
+                builder.add("picHash", picHash);
+                builder.add("sig_r", sig_r);
+                builder.add("sig_s", sig_s);
+                break;
+            case "StoreCalligSave":
+                generateFace = params[0];//图片的内容
+                //builder.add("im1", generateFace);
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.SaveURL;
+                dialogInfo = "图片识别中，请稍候...";
                 break;
             default:
                 break;
@@ -104,19 +136,27 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
 //                .post(builder.build())
 //                .addHeader("Connection", "close")
 //                .build();
-        if (TextUtils.equals(TAG, "GenerateFace")) {
+        if (TextUtils.equals(TAG, "GenerateFace") || TextUtils.equals(TAG, "StoreCalligSave")) {
             try {
                 fileTemp = new File(generateFace);
                 file = new Compressor(context).compressToFile(fileTemp);
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            fileBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
-                    .build();
+            if (TextUtils.equals(TAG, "StoreCalligSave")) {
+                fileBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("grain", defaultGrain)
+                        .build();
+            } else {
+                fileBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .build();
+            }
             request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
-        } else if (TextUtils.equals(TAG, "CreateCertificate")) {
+        } else if (TextUtils.equals(TAG, "CreateCertificate") || TextUtils.equals(TAG, "StoreCalligraphy")) {
             request = new Request.Builder()
                     .url(URL)
                     .post(builder.build())

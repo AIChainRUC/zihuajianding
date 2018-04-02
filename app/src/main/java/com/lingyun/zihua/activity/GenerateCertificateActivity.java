@@ -69,11 +69,8 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     private Button generate_camera;
     //private ImageView generate_ima;
     private TextView generate_text;
-    private static final int PERMISSIONS_FOR_TAKE_PHOTO = 10;
-    //图片文件路径
-    private String picPath;
-    //图片对应Uri
-    private Uri photoUri;
+
+
     private String picContent;//图片转为字符数组后的内容
     //拍照对应RequestCode
     public static final int SELECT_PIC_BY_TACK_PHOTO = 1;
@@ -134,7 +131,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         generate_camera = (Button) findViewById(R.id.generate_camera);
         generate_camera.setOnClickListener(this);
         //generate_ima = (ImageView) findViewById(R.id.generate_ima);
-        generate_text=(TextView)findViewById(R.id.generate_text);
+        generate_text = (TextView) findViewById(R.id.generate_text);
     }
 
     private void initToolbar() {
@@ -400,6 +397,8 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 generate_camera.setVisibility(View.GONE);
                 generate_text.setText("照片上传成功，可生成证书");
                 generate_text.setVisibility(View.VISIBLE);
+                editor.putString("generateFaceFeature", generateFaceFeature);//存入本地，人脸特征
+                editor.apply();
                 mFile = new File(picPath);
                 mFile.delete();
             } else if (TextUtils.equals(s, "-1")) {
@@ -408,9 +407,9 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 generate_camera.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(ButtonUtil.isFastDoubleClick()){
+                        if (ButtonUtil.isFastDoubleClick()) {
                             UiUtils.show("您的操作过于频繁，请稍候再试");
-                        }else{
+                        } else {
                             new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
                         }
                     }
@@ -421,9 +420,9 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 generate_camera.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if(ButtonUtil.isFastDoubleClick()){
+                        if (ButtonUtil.isFastDoubleClick()) {
                             UiUtils.show("您的操作过于频繁，请稍候再试");
-                        }else{
+                        } else {
                             //new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
                             takePictures();
                         }
@@ -443,8 +442,12 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (TextUtils.equals(s, "200")) {//200说明人脸识别成功
+            if (TextUtils.equals(s, "200")) {//200说明证书生成成功
                 UiUtils.show("证书生成成功");
+                editor.putString("generatePublicKey", generatePublicKey);
+                editor.putString("generatePrivateKey", generatePrivateKey);
+                editor.putString("generateCertificate", generateCertificate);
+                editor.apply();
                 finish();
             } else if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");

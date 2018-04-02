@@ -14,6 +14,7 @@ import com.lingyun.zihua.base.BaseApplication;
  * UI工具类
  */
 public class UiUtils {
+    public static Toast myToast;
     public static Resources getResource() {
         return BaseApplication.getInstance().getResources();
     }
@@ -93,9 +94,14 @@ public class UiUtils {
         BaseApplication.getHandler().removeCallbacks(auToRunTask);
     }
 
-    public static void show(String content) {
-        Toast toast = Toast.makeText(BaseApplication.getInstance(), content, Toast.LENGTH_SHORT);
-        toast.show();
+    public static void show(String string) {
+        if (myToast == null) {
+            myToast = Toast.makeText(BaseApplication.getInstance(),
+                    string, Toast.LENGTH_SHORT);
+        }else{
+            myToast.setText(string);
+        }
+        myToast.show();
     }
     public static void showInCenter(String content) {
         Toast toast = Toast.makeText(BaseApplication.getInstance(), content, Toast.LENGTH_SHORT);
