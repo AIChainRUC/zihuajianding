@@ -71,7 +71,10 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     private String sig_s = "default";//ecbsa签名_s
     public static final int SELECT_PIC_BY_TACK_PHOTO_IMAGE = 3;
     public static final int SELECT_PIC_BY_TACK_PHOTO_SEAL = 4;
+    public static final int GO_TO_KEY = 5;
     private String generateSealFeature;//印章特征
+    private TextView store_assetId;
+    private TextView assetId_help;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +113,8 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         store_seal_submit.setOnClickListener(this);
         store_image_submit = (TextView) findViewById(R.id.store_image_submit);
         store_image_submit.setOnClickListener(this);
+        store_assetId = (TextView) findViewById(R.id.store_assetId);
+        assetId_help = (TextView) findViewById(R.id.assetId_help);
     }
 
     private void initToolbar() {
@@ -124,7 +129,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.store_text_key:
-                startActivity(new Intent(StoreCalligraphyActivity.this, GenerateCertificateActivity.class));
+                startActivityForResult(new Intent(StoreCalligraphyActivity.this, GenerateCertificateActivity.class),GO_TO_KEY);
                 break;
             case R.id.store_submit:
                 store_workName = store_workName_edt.getText().toString().trim();
@@ -248,7 +253,10 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     new AsySaveTask(this, "StoreCalligSave", picPath).execute();
                 }
-            } else {
+            } else if(requestCode==GO_TO_KEY){
+                store_text_key.setText("密钥文件已上传");
+                store_text_key.setEnabled(false);
+            }else {
                 //错误提示
                 UiUtils.show("拍照失败");
             }
@@ -320,7 +328,11 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 UiUtils.show("恭喜您，存链成功");
                 editor.putString("assetID", assetID);
                 editor.apply();
-                finish();
+                store_assetId.setText(assetID);
+                store_assetId.setVisibility(View.VISIBLE);
+                assetId_help.setVisibility(View.VISIBLE);
+                storeSubmit_btn.setVisibility(View.GONE);
+                //finish();
             } else {
                 UiUtils.show("存链失败，请重试");
             }

@@ -204,12 +204,13 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                     }
                 }
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
-                    photoUri = Uri.fromFile(new File(picPath));
-                    if (photoUri != null) {
-                        //bitmap = BitmapFactory.decodeFile(picPath);
-                        new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
-                        //new AsyImageToStr().execute();
-                    }
+                    new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+//                    photoUri = Uri.fromFile(new File(picPath));
+//                    if (photoUri != null) {
+//                        //bitmap = BitmapFactory.decodeFile(picPath);
+//
+//                        //new AsyImageToStr().execute();
+//                    }
 //                    if (Build.VERSION.SDK_INT > 23) {
 //                        photoUri = FileProvider.getUriForFile(this, "com.lingyun.zihua.fileprovider", new File(picPath));
 //                        cropForN(picPath, CROP_PICTURE);
@@ -448,6 +449,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 editor.putString("generatePrivateKey", generatePrivateKey);
                 editor.putString("generateCertificate", generateCertificate);
                 editor.apply();
+                setResult(RESULT_OK);
                 finish();
             } else if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");

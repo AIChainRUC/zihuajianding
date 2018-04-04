@@ -20,103 +20,93 @@
             android:textColor="#fff"
             android:textSize="20sp" />
     </android.support.v7.widget.Toolbar>
-
-
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="书画照片"
-            android:textSize="20sp" />
+            android:text="印章图片:" />
 
-        <Button
-            android:id="@+id/upload_calligraphy_btm"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:background="@color/main_hue"
-            android:text="上传"
-            android:textColor="#fff" />
         <TextView
-            android:id="@+id/generate_calligraphy_text"
+            android:id="@+id/identify_seal_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="请上传印章图片"
             android:layout_gravity="center"
-            android:visibility="gone"
             android:gravity="center"
+            android:textSize="25sp"
             android:textColor="@color/main_hue" />
     </LinearLayout>
-
-
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="20dp"
-        android:layout_marginTop="10dp"
         android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
         android:orientation="horizontal">
 
         <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="字画键值"
-            android:textSize="20sp" />
+            android:text="字画键值:" />
 
-        <Button
-            android:id="@+id/upload_calligraphy_id_btm"
+        <EditText
+            android:id="@+id/identify_seal_keyValue"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:background="@color/main_hue"
-            android:text="上传"
-            android:textColor="#fff" />
-        <TextView
-            android:id="@+id/generate_calligraphy_id_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:hint="请输入字画键值"
             android:layout_gravity="center"
-            android:visibility="gone"
-            android:gravity="center"
-            android:textColor="@color/main_hue" />
+            android:gravity="center" />
+        <!--<Button-->
+            <!--android:id="@+id/identify_seal_keyValue_btn"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" -->
+            <!--android:text="验证键值"/>-->
     </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
 
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="字画描述:" />
 
-
-
-    <!--<ImageView-->
-    <!--android:id="@+id/generate_ima"-->
-    <!--android:layout_width="wrap_content"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_marginLeft="30dp"-->
-    <!--android:layout_marginRight="30dp"-->
-    <!--android:layout_marginTop="10dp"-->
-    <!--android:layout_gravity="center"-->
-    <!--android:visibility="invisible"/>-->
-
+        <EditText
+            android:id="@+id/identify_seal_decribal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:hint="请输入字画描述"
+            android:layout_gravity="center"
+            android:gravity="center" />
+    </LinearLayout>
     <Button
-        android:id="@+id/identify_calligraphy_btn"
+        android:id="@+id/identify_seal_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="30dp"
+        android:text="开始鉴定"
         android:layout_marginTop="10dp"
-        android:layout_marginRight="30dp"
-        android:background="@color/main_hue"
-        android:text="书画鉴定"
-        android:textColor="#fff" />
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="30dp" />
-
-
+        android:textColor="@color/text_color"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/main_hue"/>
 </LinearLayout>

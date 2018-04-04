@@ -1,13 +1,18 @@
 package com.lingyun.zihua.util;
 
+import android.util.Base64;
+
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.interfaces.ECPrivateKey;
 import java.security.interfaces.ECPublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 /**
  * author: anapodoton
@@ -16,6 +21,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
  * https://segmentfault.com/a/1190000012288285
  */
 public class ECDSAUtil {
+
     public static void jdkECDSA() {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("EC");

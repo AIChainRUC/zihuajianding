@@ -60,6 +60,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     private String sig_s;//ecbsa签名_s
     private String authorPUBKEY;//作家公钥
     private String defaultGrain = "0";//印章图片是否考虑纹理，值为0或1
+    private String assetId;
 
     public BaseAsyTask() {
 
@@ -111,6 +112,19 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.SaveURL;
                 dialogInfo = "图片识别中，请稍候...";
                 break;
+            case "AsyRetrieveFeatureTask":
+                assetId = params[0];
+                URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.RetrieveFeatureURL;
+                dialogInfo = "字画键值识别中，请稍候...";
+                builder.add("assetID", assetId);
+                break;
+            case "AsyCheckTask":
+                generateFace = params[0];//图片的内容
+                featureSeal = params[1];
+                //builder.add("im1", generateFace);
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
+                dialogInfo = "字画鉴定中，请稍候...";
+                break;
             default:
                 break;
         }
@@ -149,14 +163,20 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                         .addFormDataPart("grain", defaultGrain)
                         .build();
-            } else {
+            } else if(TextUtils.equals(TAG, "AsyCheckTask")){
+                fileBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("im2feature",featureSeal)
+                        .build();
+            }else {
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                         .build();
             }
             request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
-        } else if (TextUtils.equals(TAG, "CreateCertificate") || TextUtils.equals(TAG, "StoreCalligraphy")) {
+        } else {
             request = new Request.Builder()
                     .url(URL)
                     .post(builder.build())
