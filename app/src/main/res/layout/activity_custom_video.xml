@@ -44,9 +44,6 @@
         <!--android:onClick="stopRecord"-->
         <!--android:src="@mipmap/control_pause"-->
         <!--android:visibility="gone" />-->
-
-
-
     </RelativeLayout>
 
 </RelativeLayout>

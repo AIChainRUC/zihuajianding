@@ -56,7 +56,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     //Toolbar相关
     private Toolbar toolbar;
     private String generatePublicKey = null;//公钥
-    private String generatePrivateKey = null;//公钥
+    private String generatePrivateKey = null;//私钥
     private String store_workName = null;
     private String store_workSize = null;
     private String creationYear = null;

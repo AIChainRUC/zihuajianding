@@ -32,10 +32,9 @@ dependencies {
     implementation 'com.tencent.bugly:nativecrashreport:latest.release'
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okio:okio:1.7.0'
+    implementation 'com.github.bumptech.glide:glide:4.3.1'
     implementation 'id.zelory:compressor:2.1.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.1.2'
-    implementation 'com.mabeijianxi:small-video-record2:2.0.3@aar'
-    //https://github.com/mabeijianxi/small-video-record/blob/master/document/2.x_using_help.md
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'

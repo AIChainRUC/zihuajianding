@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.lingyun.zihua.R;
+import com.lingyun.zihua.base.BaseActivity;
 import com.lingyun.zihua.util.UiUtils;
 import com.lingyun.zihua.util.VideoUtil;
 
@@ -31,51 +32,42 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class CustomVideoActivity extends AppCompatActivity implements View.OnClickListener {
+public class CustomVideoActivity extends BaseActivity implements View.OnClickListener {
     private static final String TAG = "CustomRecordActivity";
     public static final int CONTROL_CODE = 1;
     //UI
     private ImageView mRecordControl;
-   // private ImageView mPauseRecord;
+    // private ImageView mPauseRecord;
     private SurfaceView surfaceView;
     private SurfaceHolder mSurfaceHolder;
-    private Chronometer mRecordTime;
 
     //DATA
     private boolean isRecording;// 标记，判断当前是否正在录制
     private boolean isPause; //暂停标识
-    private long mPauseTime = 0;           //录制暂停时间间隔
 
-    // 存储文件
-    private File mVecordFile;
-    private Camera mCamera;
-    private MediaRecorder mediaRecorder;
-    private String currentVideoFilePath;
-    private String saveVideoPath = "";
-
-//    private Handler mHandler = new MyHandler(CustomVideoActivity.this);
-//
-//    private static class MyHandler extends Handler {
-//        private final WeakReference<CustomVideoActivity> mActivity;
-//
-//        public MyHandler(CustomVideoActivity activity) {
-//            mActivity = new WeakReference<>(activity);
-//        }
-//
-//        @Override
-//        public void handleMessage(Message msg) {
-//            System.out.println(msg);
-//            if (mActivity.get() == null) {
-//                return;
-//            }
-//            switch (msg.what) {
-//                case CONTROL_CODE:
-//                    //开启按钮
-//                    mActivity.get().mRecordControl.setEnabled(true);
-//                    break;
-//            }
-//        }
-//    }
+    //    private Handler mHandler = new MyHandler(CustomVideoActivity.this);
+    //
+    //    private static class MyHandler extends Handler {
+    //        private final WeakReference<CustomVideoActivity> mActivity;
+    //
+    //        public MyHandler(CustomVideoActivity activity) {
+    //            mActivity = new WeakReference<>(activity);
+    //        }
+    //
+    //        @Override
+    //        public void handleMessage(Message msg) {
+    //            System.out.println(msg);
+    //            if (mActivity.get() == null) {
+    //                return;
+    //            }
+    //            switch (msg.what) {
+    //                case CONTROL_CODE:
+    //                    //开启按钮
+    //                    mActivity.get().mRecordControl.setEnabled(true);
+    //                    break;
+    //            }
+    //        }
+    //    }
 
     private MediaRecorder.OnErrorListener OnErrorListener = new MediaRecorder.OnErrorListener() {
         @Override
@@ -118,35 +110,13 @@ public class CustomVideoActivity extends AppCompatActivity implements View.OnCli
         mRecordTime.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener() {
             @Override
             public void onChronometerTick(Chronometer chronometer) {
-                if ((SystemClock.elapsedRealtime() - chronometer.getBase()) >= 5 * 1000) {
-                    stopRecord();
-                    mCamera.lock();
-                    stopCamera();
+                if ((SystemClock.elapsedRealtime() - chronometer.getBase()) > 5 * 1000) {
                     mRecordTime.stop();
                     mPauseTime = 0;
-                    UiUtils.show("视频已录制完成，请稍候。。。");
+                    //UiUtils.show("视频已录制完成，正在处理中，请稍候。。。");
                     setToResult();
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            try {
-//                                if (!(saveVideoPath.equals(""))) {
-//                                    String[] str = new String[]{saveVideoPath, currentVideoFilePath};
-//                                    VideoUtil.appendVideo(CustomVideoActivity.this, getSDPath(CustomVideoActivity.this) + "append.mp4", str);
-//                                    File reName = new File(saveVideoPath);
-//                                    File f = new File(getSDPath(CustomVideoActivity.this) + "append.mp4");
-//                                    f.renameTo(reName);//将合成的视频复制过来
-//                                    if (reName.exists()) {
-//                                        f.delete();
-//                                        new File(currentVideoFilePath).delete();
-//                                    }
-//                                }
-//
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }).start();
+                    //setResult(RESULT_OK);
+                    //finish();
                 }
             }
         });
@@ -230,21 +200,6 @@ public class CustomVideoActivity extends AppCompatActivity implements View.OnCli
 
 
     /**
-     * 释放摄像头资源
-     *
-     * @author liuzhongjun
-     * @date 2016-2-5
-     */
-    private void stopCamera() {
-        if (mCamera != null) {
-            mCamera.setPreviewCallback(null);
-            mCamera.stopPreview();
-            mCamera.release();
-            mCamera = null;
-        }
-    }
-
-    /**
      * 开始录制视频
      */
     public void startRecord() {
@@ -265,31 +220,9 @@ public class CustomVideoActivity extends AppCompatActivity implements View.OnCli
             mRecordTime.setBase(SystemClock.elapsedRealtime());
         }
         mRecordTime.start();
-        mRecordControl.setVisibility(View.GONE);
+        mRecordControl.setVisibility(View.INVISIBLE);
     }
 
-    /**
-     * 停止录制视频
-     */
-    public void stopRecord() {
-        if (mediaRecorder != null) {
-            // 设置后不会崩
-            mediaRecorder.setOnErrorListener(null);
-            mediaRecorder.setPreviewDisplay(null);
-            //停止录制
-            mediaRecorder.stop();
-            mediaRecorder.reset();
-            //释放资源
-            mediaRecorder.release();
-            mediaRecorder = null;
-
-            mRecordTime.stop();
-/*            //设置开始按钮可点击，停止按钮不可点击
-            mRecordControl.setEnabled(true);
-           // mPauseRecord.setEnabled(false);*/
-            //isRecording = false;
-        }
-    }
 
     public void pauseRecord() {
 
@@ -303,91 +236,91 @@ public class CustomVideoActivity extends AppCompatActivity implements View.OnCli
             //开始录制视频
             startRecord();
         //mRecordControl.setImageResource(R.mipmap.recordvideo_stop);
-//                    mRecordControl.setEnabled(false);//1s后才能停止
-//                    mHandler.sendEmptyMessageDelayed(CONTROL_CODE, 100);
+        //                    mRecordControl.setEnabled(false);//1s后才能停止
+        //                    mHandler.sendEmptyMessageDelayed(CONTROL_CODE, 100);
         //停止视频录制
-//                    mRecordControl.setImageResource(R.mipmap.recordvideo_start);
-//                    mPauseRecord.setVisibility(View.GONE);
-//                    mPauseRecord.setEnabled(false);
-//                    stopRecord();
-//                    mCamera.lock();
-//                    stopCamera();
-//                    mRecordTime.stop();
-//                    mPauseTime = 0;
-//                    new Thread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            try {
-//                                if (!(saveVideoPath.equals(""))) {
-//                                    String[] str = new String[]{saveVideoPath, currentVideoFilePath};
-//                                    VideoUtil.appendVideo(CustomVideoActivity.this, getSDPath(CustomVideoActivity.this) + "append.mp4", str);
-//                                    File reName = new File(saveVideoPath);
-//                                    File f = new File(getSDPath(CustomVideoActivity.this) + "append.mp4");
-//                                    f.renameTo(reName);//将合成的视频复制过来
-//                                    if (reName.exists()) {
-//                                        f.delete();
-//                                        new File(currentVideoFilePath).delete();
-//                                    }
-//                                }
-//                                setResult(RESULT_OK);
-//                                finish();
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }).start();
+        //                    mRecordControl.setImageResource(R.mipmap.recordvideo_start);
+        //                    mPauseRecord.setVisibility(View.GONE);
+        //                    mPauseRecord.setEnabled(false);
+        //                    stopRecord();
+        //                    mCamera.lock();
+        //                    stopCamera();
+        //                    mRecordTime.stop();
+        //                    mPauseTime = 0;
+        //                    new Thread(new Runnable() {
+        //                        @Override
+        //                        public void run() {
+        //                            try {
+        //                                if (!(saveVideoPath.equals(""))) {
+        //                                    String[] str = new String[]{saveVideoPath, currentVideoFilePath};
+        //                                    VideoUtil.appendVideo(CustomVideoActivity.this, getSDPath(CustomVideoActivity.this) + "append.mp4", str);
+        //                                    File reName = new File(saveVideoPath);
+        //                                    File f = new File(getSDPath(CustomVideoActivity.this) + "append.mp4");
+        //                                    f.renameTo(reName);//将合成的视频复制过来
+        //                                    if (reName.exists()) {
+        //                                        f.delete();
+        //                                        new File(currentVideoFilePath).delete();
+        //                                    }
+        //                                }
+        //                                setResult(RESULT_OK);
+        //                                finish();
+        //                            } catch (IOException e) {
+        //                                e.printStackTrace();
+        //                            }
+        //                        }
+        //                    }).start();
 
-//            case R.id.record_pause:
-//                if (isRecording) { //正在录制的视频，点击后暂停
-//                    mPauseRecord.setImageResource(R.mipmap.control_play);
-//                    //暂停视频录制
-//                    mCamera.autoFocus(new Camera.AutoFocusCallback() {
-//                        @Override
-//                        public void onAutoFocus(boolean success, Camera camera) {
-//                            if (success == true)
-//                                CustomVideoActivity.this.mCamera.cancelAutoFocus();
-//                        }
-//                    });
-//                    stopRecord();
-//                    mRecordTime.stop();
-//                    isPause = true;
-//                    if (saveVideoPath.equals("")) {
-//                        saveVideoPath = currentVideoFilePath;
-//                    } else {
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                try {
-//                                    String[] str = new String[]{saveVideoPath, currentVideoFilePath};
-//                                    VideoUtil.appendVideo(CustomVideoActivity.this, getSDPath(getApplicationContext()) + "append.mp4", str);
-//                                    File reName = new File(saveVideoPath);
-//                                    File f = new File(getSDPath(getApplicationContext()) + "append.mp4");
-//                                    f.renameTo(reName);
-//                                    if (reName.exists()) {
-//                                        f.delete();
-//                                        new File(currentVideoFilePath).delete();
-//                                    }
-//                                } catch (IOException e) {
-//                                    e.printStackTrace();
-//                                }
-//                            }
-//                        }).start();
-//                    }
-//
-//                } else {
-//                    mPauseRecord.setImageResource(R.mipmap.control_pause);
-//                    if (mPauseTime != 0) {
-//                        mRecordTime.setBase(SystemClock.elapsedRealtime() - (mPauseTime - mRecordTime.getBase()));
-//                    } else {
-//                        mRecordTime.setBase(SystemClock.elapsedRealtime());
-//                    }
-//                    mRecordTime.start();
-//                    //继续视频录制
-//                    startRecord();
-//                    isPause = false;
+        //            case R.id.record_pause:
+        //                if (isRecording) { //正在录制的视频，点击后暂停
+        //                    mPauseRecord.setImageResource(R.mipmap.control_play);
+        //                    //暂停视频录制
+        //                    mCamera.autoFocus(new Camera.AutoFocusCallback() {
+        //                        @Override
+        //                        public void onAutoFocus(boolean success, Camera camera) {
+        //                            if (success == true)
+        //                                CustomVideoActivity.this.mCamera.cancelAutoFocus();
+        //                        }
+        //                    });
+        //                    stopRecord();
+        //                    mRecordTime.stop();
+        //                    isPause = true;
+        //                    if (saveVideoPath.equals("")) {
+        //                        saveVideoPath = currentVideoFilePath;
+        //                    } else {
+        //                        new Thread(new Runnable() {
+        //                            @Override
+        //                            public void run() {
+        //                                try {
+        //                                    String[] str = new String[]{saveVideoPath, currentVideoFilePath};
+        //                                    VideoUtil.appendVideo(CustomVideoActivity.this, getSDPath(getApplicationContext()) + "append.mp4", str);
+        //                                    File reName = new File(saveVideoPath);
+        //                                    File f = new File(getSDPath(getApplicationContext()) + "append.mp4");
+        //                                    f.renameTo(reName);
+        //                                    if (reName.exists()) {
+        //                                        f.delete();
+        //                                        new File(currentVideoFilePath).delete();
+        //                                    }
+        //                                } catch (IOException e) {
+        //                                    e.printStackTrace();
+        //                                }
+        //                            }
+        //                        }).start();
+        //                    }
+        //
+        //                } else {
+        //                    mPauseRecord.setImageResource(R.mipmap.control_pause);
+        //                    if (mPauseTime != 0) {
+        //                        mRecordTime.setBase(SystemClock.elapsedRealtime() - (mPauseTime - mRecordTime.getBase()));
+        //                    } else {
+        //                        mRecordTime.setBase(SystemClock.elapsedRealtime());
+        //                    }
+        //                    mRecordTime.start();
+        //                    //继续视频录制
+        //                    startRecord();
+        //                    isPause = false;
         //     }
-//                break;
-//        }
+        //                break;
+        //        }
 
     }
 
@@ -458,11 +391,11 @@ public class CustomVideoActivity extends AppCompatActivity implements View.OnCli
         //设置图像的编码格式
         mediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         //设置立体声
-//        mediaRecorder.setAudioChannels(2);
+        //        mediaRecorder.setAudioChannels(2);
         //设置最大录像时间 单位：毫秒
-//        mediaRecorder.setMaxDuration(60 * 1000);
+        //        mediaRecorder.setMaxDuration(60 * 1000);
         //设置最大录制的大小 单位，字节
-//        mediaRecorder.setMaxFileSize(1024 * 1024);
+        //        mediaRecorder.setMaxFileSize(1024 * 1024);
         //音频一秒钟包含多少数据位
         CamcorderProfile mProfile = CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH);
         mediaRecorder.setAudioEncodingBitRate(44100);
@@ -478,7 +411,7 @@ public class CustomVideoActivity extends AppCompatActivity implements View.OnCli
         mediaRecorder.setVideoSize(352, 288);
 
         //设置录像视频保存地址
-        currentVideoFilePath = getSDPath(getApplicationContext()) + getVideoName();
+        currentVideoFilePath = Environment.getExternalStorageDirectory() + "/Pictures" + getVideoName();
         mediaRecorder.setOutputFile(currentVideoFilePath);
     }
 
@@ -493,5 +426,4 @@ public class CustomVideoActivity extends AppCompatActivity implements View.OnCli
         setResult(RESULT_OK, intent);
         finish();
     }
-
 }

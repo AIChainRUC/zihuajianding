@@ -47,7 +47,6 @@ public class VideoUtil {
                 }
             }
         }
-
         // 合并到最终的视频文件
         Movie result = new Movie();
 
@@ -61,34 +60,5 @@ public class VideoUtil {
         FileChannel fc = new RandomAccessFile(String.format(saveVideoPath), "rw").getChannel();
         out.writeContainer(fc);
         fc.close();
-    }
-
-    private static double correctTimeToSyncSample(Track track, double cutHere, boolean next) {
-        double[] timeOfSyncSamples = new double[track.getSyncSamples().length];
-        long currentSample = 0;
-        double currentTime = 0;
-        for (int i = 0; i < track.getDecodingTimeEntries().size(); i++) {
-            TimeToSampleBox.Entry entry = track.getDecodingTimeEntries().get(i);
-            for (int j = 0; j < entry.getCount(); j++) {
-                if (Arrays.binarySearch(track.getSyncSamples(), currentSample + 1) >= 0) {
-                    // samples always start with 1 but we start with zero therefore +1
-                    timeOfSyncSamples[Arrays.binarySearch(track.getSyncSamples(), currentSample + 1)] = currentTime;
-                }
-                currentTime += (double) entry.getDelta() / (double) track.getTrackMetaData().getTimescale();
-                currentSample++;
-            }
-        }
-        double previous = 0;
-        for (double timeOfSyncSample : timeOfSyncSamples) {
-            if (timeOfSyncSample > cutHere) {
-                if (next) {
-                    return timeOfSyncSample;
-                } else {
-                    return previous;
-                }
-            }
-            previous = timeOfSyncSample;
-        }
-        return timeOfSyncSamples[timeOfSyncSamples.length - 1];
     }
 }

@@ -66,6 +66,11 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
 
     }
 
+    public BaseAsyTask(Context context, String TAG) {
+        this.context = context;
+        this.TAG = TAG;
+    }
+
     public BaseAsyTask(Context context, String TAG, String... params) {
         this.context = context;
         this.TAG = TAG;
@@ -125,6 +130,11 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
                 dialogInfo = "字画鉴定中，请稍候...";
                 break;
+            case "AsyVideoTask":
+                generateFace = params[0];//视频的内容
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.FaceIdenURL;
+                dialogInfo = "视频上传中，请稍候...";
+                break;
             default:
                 break;
         }
@@ -145,44 +155,101 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
         pDialog.setCancelable(false);
         pDialog.setIndeterminate(false);
         pDialog.show();
-//        request = new Request.Builder()
-//                .url(URL)
-//                .post(builder.build())
-//                .addHeader("Connection", "close")
-//                .build();
-        if (TextUtils.equals(TAG, "GenerateFace") || TextUtils.equals(TAG, "StoreCalligSave")) {
-            try {
-                fileTemp = new File(generateFace);
-                file = new Compressor(context).compressToFile(fileTemp);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if (TextUtils.equals(TAG, "StoreCalligSave")) {
+        switch (TAG) {
+            case "GenerateFace":
+                try {
+                    fileTemp = new File(generateFace);
+                    file = new Compressor(context).compressToFile(fileTemp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                fileBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .build();
+                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+                break;
+            case "StoreCalligSave":
+                try {
+                    fileTemp = new File(generateFace);
+                    file = new Compressor(context).compressToFile(fileTemp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                         .addFormDataPart("grain", defaultGrain)
                         .build();
-            } else if(TextUtils.equals(TAG, "AsyCheckTask")){
+                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+                break;
+            case "AsyCheckTask":
+                try {
+                    fileTemp = new File(generateFace);
+                    file = new Compressor(context).compressToFile(fileTemp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
-                        .addFormDataPart("im2feature",featureSeal)
+                        .addFormDataPart("im2feature", featureSeal)
                         .build();
-            }else {
+                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+                break;
+            case "AsyVideoTask":
+                file = new File(generateFace);
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("video", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                         .build();
-            }
-            request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
-        } else {
-            request = new Request.Builder()
-                    .url(URL)
-                    .post(builder.build())
-                    .addHeader("Connection", "close")
-                    .build();
+                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+                break;
+            case "CreateCertificate":
+            case "StoreCalligraphy":
+            case "AsyRetrieveFeatureTask":
+                request = new Request.Builder()
+                        .url(URL)
+                        .post(builder.build())
+                        .addHeader("Connection", "close")
+                        .build();
+                break;
+            default:
+                break;
         }
+//        if (TextUtils.equals(TAG, "GenerateFace") || TextUtils.equals(TAG, "StoreCalligSave") || TextUtils.equals(TAG, "AsyCheckTask")) {
+//            try {
+//                fileTemp = new File(generateFace);
+//                file = new Compressor(context).compressToFile(fileTemp);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//            if (TextUtils.equals(TAG, "StoreCalligSave")) {
+//                fileBody = new MultipartBody.Builder()
+//                        .setType(MultipartBody.FORM)
+//                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+//                        .addFormDataPart("grain", defaultGrain)
+//                        .build();
+//            } else if (TextUtils.equals(TAG, "AsyCheckTask")) {
+//                fileBody = new MultipartBody.Builder()
+//                        .setType(MultipartBody.FORM)
+//                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+//                        .addFormDataPart("im2feature", featureSeal)
+//                        .build();
+//            } else {
+//                fileBody = new MultipartBody.Builder()
+//                        .setType(MultipartBody.FORM)
+//                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+//                        .build();
+//            }
+//            request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+//        } else {
+//            request = new Request.Builder()
+//                    .url(URL)
+//                    .post(builder.build())
+//                    .addHeader("Connection", "close")
+//                    .build();
+//        }
     }
 
     @Override

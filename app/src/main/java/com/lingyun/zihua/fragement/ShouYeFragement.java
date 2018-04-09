@@ -25,6 +25,7 @@ import com.lingyun.zihua.base.BaseFragement;
 import com.lingyun.zihua.bean.HomeCarousel;
 import com.lingyun.zihua.util.UiUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,6 +47,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
     private boolean isRunning = false;
     private AuToRunTask runTask;
     private MyHomeListAdapter adapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,10 +56,10 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View mView = inflater.inflate(R.layout.fragement_shouye, container, false);
-        main_list=(ListView)mView.findViewById(R.id.main_list);
-        vpHomeTitle=(ViewPager)mView.findViewById(R.id.vp_home_title);
-        pointGroup=(LinearLayout)mView.findViewById(R.id.point_group);
+        view = inflater.inflate(R.layout.fragement_shouye, container, false);
+        main_list = (ListView) view.findViewById(R.id.main_list);
+        vpHomeTitle = (ViewPager)view.findViewById(R.id.vp_home_title);
+        pointGroup = (LinearLayout) view.findViewById(R.id.point_group);
         initListView();
         if (picDatas == null) {
             //如果没有数据，就从网络中获取
@@ -67,9 +69,24 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
             pointGroup.removeAllViews();
             initIndicator();
         }
-        return mView;
+        return view;
     }
-
+    @Override
+    public void onPause() {
+        if (runTask != null) {
+            runTask.stop();
+        }
+        isRunning = false;
+        super.onPause();
+    }
+    @Override
+    public void onDestroyView() {
+        if (runTask != null) {
+            runTask = null;
+        }
+        isRunning = false;
+        super.onDestroyView();
+    }
     /**
      * 初始化原点指示器
      */
@@ -139,6 +156,17 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
     }
 
     private void initImageUrl() {
+        //List<HomeCarousel> list = new ArrayList<>();
+        picDatas = new ArrayList<>();
+        HomeCarousel homeCarousel;
+        homeCarousel = new HomeCarousel(R.mipmap.next_icon, "www.baidu.com");
+        picDatas.add(homeCarousel);
+        picDatas.add(new HomeCarousel(R.mipmap.ic_launcher,"www.baidu.com"));
+        initIndicator();
+//        homeCarousel.setImageView(R.mipmap.background);
+//        homeCarousel.setLink("www.baidu.com");
+//        picDatas.add(homeCarousel);
+//        initIndicator();
     }
 
     private void initListView() {
@@ -149,7 +177,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position){
+        switch (position) {
             case 0:
                 startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));//字画存链
                 break;
@@ -159,9 +187,9 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
             case 2:
                 startActivity(new Intent(getActivity(), GenerateCertificateActivity.class));
                 break;
-                default:
-                    startActivity(new Intent(getActivity(), SignCertificateActivity.class));
-                    break;
+            default:
+                startActivity(new Intent(getActivity(), SignCertificateActivity.class));
+                break;
         }
     }
 

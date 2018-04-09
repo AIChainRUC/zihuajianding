@@ -3,10 +3,14 @@ package com.lingyun.zihua.bean;
 import android.widget.ImageView;
 //主页的viewPager实体类
 public class HomeCarousel {
-    private ImageView imageView;
+    private int imageView;
     private String link;
 
-    public ImageView getImageView() {
+    public HomeCarousel(int imageView,String link){
+        this.imageView = imageView;
+        this.link = link;
+    }
+    public int getImageView() {
         return imageView;
     }
 
@@ -14,7 +18,7 @@ public class HomeCarousel {
         return link;
     }
 
-    public void setImageView(ImageView imageView) {
+    public void setImageView(int imageView) {
         this.imageView = imageView;
     }
 

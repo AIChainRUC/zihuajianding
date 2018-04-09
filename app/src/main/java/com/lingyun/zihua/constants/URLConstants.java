@@ -15,4 +15,6 @@ public class URLConstants {
     public static final String SaveURL = "/save";//印章特征提取
     public static final String RetrieveFeatureURL = "/channels/mychannel/chaincodes/urcc/retrieveFeature";//获取链上字画印章特征
     public static final String CheckURL = "/check";//字画鉴定
+    public static final String FaceIdenURL = "/faceIden";//短视频验证
+    public static final String RetrieveUserFeature = "/retrieveUserFeature";//证书使用，查找链上人脸特征
 }

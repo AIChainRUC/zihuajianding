@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.hardware.Camera;
+import android.media.MediaRecorder;
 import android.net.ConnectivityManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,12 +21,14 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.Chronometer;
 
 import com.lingyun.zihua.interfaceMy.PermissionListener;
 import com.lingyun.zihua.other.ActivityCollector;
 import com.lingyun.zihua.receiver.NetWorkChangerReceiver;
 import com.lingyun.zihua.util.ToasUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,6 +53,14 @@ public class BaseActivity extends AppCompatActivity {
     protected Uri photoUri;
     //图片文件路径
     protected String picPath;
+    // 存储文件
+    protected File mVecordFile;
+    protected Camera mCamera;
+    protected MediaRecorder mediaRecorder;
+    protected String currentVideoFilePath;
+    protected String saveVideoPath = "";
+    protected Chronometer mRecordTime;
+    protected long mPauseTime = 0;           //录制暂停时间间隔
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -98,6 +110,42 @@ public class BaseActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         ActivityCollector.removeActivity(this);
+    }
+    /**
+     * 释放摄像头资源
+     *
+     * @author liuzhongjun
+     * @date 2016-2-5
+     */
+    protected void stopCamera() {
+        if (mCamera != null) {
+            mCamera.setPreviewCallback(null);
+            mCamera.stopPreview();
+            mCamera.release();
+            mCamera = null;
+        }
+    }
+    /**
+     * 停止录制视频
+     */
+    public void stopRecord() {
+        if (mediaRecorder != null) {
+            // 设置后不会崩
+            mediaRecorder.setOnErrorListener(null);
+            mediaRecorder.setPreviewDisplay(null);
+            //停止录制
+            mediaRecorder.stop();
+            mediaRecorder.reset();
+            //释放资源
+            mediaRecorder.release();
+            mediaRecorder = null;
+
+            mRecordTime.stop();
+/*            //设置开始按钮可点击，停止按钮不可点击
+            mRecordControl.setEnabled(true);
+           // mPauseRecord.setEnabled(false);*/
+            //isRecording = false;
+        }
     }
 
     //处理权限被授予或者拒绝后，需要进行的操作
