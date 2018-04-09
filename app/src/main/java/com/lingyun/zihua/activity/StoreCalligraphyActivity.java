@@ -296,7 +296,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
                 store_seal_submit.setText("重新上传");
-                new AsySaveTask(StoreCalligraphyActivity.this, "StoreCalligSave", picPath).execute();
+                //new AsySaveTask(StoreCalligraphyActivity.this, "StoreCalligSave", picPath).execute();
             } else if (TextUtils.equals(s, "200")) {
                 UiUtils.show("印章上传成功");
                 store_seal_submit.setText("印章上传成功");
