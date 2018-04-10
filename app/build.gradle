@@ -8,7 +8,7 @@ bugly {
 android {
     compileSdkVersion 27
     defaultConfig {
-        applicationId "com.lingyun.zihua"
+        applicationId "com.lingyun_chain.zihua"
         minSdkVersion 17
         targetSdkVersion 27
         versionCode 1

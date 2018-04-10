@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.lingyun.zihua">
+    package="com.lingyun_chain.zihua">
 
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.CAMERA" />
@@ -66,7 +66,7 @@
         <activity android:name=".activity.UserHelp" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.lingyun.zihua.fileprovider"
+            android:authorities="com.lingyun_chain.zihua.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
