@@ -76,7 +76,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     public static final int SELECT_PIC_BY_TACK_PHOTO = 1;
     //裁剪图片
     private static final int CROP_PICTURE = 3;
-    private String generateFaceFeature;//人脸特征
+    private String generateFaceFeature="default";//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//公钥
     private String generateCertificate = null;//证书

@@ -61,6 +61,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     private String authorPUBKEY;//作家公钥
     private String defaultGrain = "0";//印章图片是否考虑纹理，值为0或1
     private String assetId;
+    private String generateCertificate;
 
     public BaseAsyTask() {
 
@@ -130,10 +131,16 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
                 dialogInfo = "字画鉴定中，请稍候...";
                 break;
-            case "AsyVideoTask":
+            case "AsyCheckFaceTask"://活体验证
                 generateFace = params[0];//视频的内容
-                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.FaceIdenURL;
-                dialogInfo = "视频上传中，请稍候...";
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
+                dialogInfo = "照片上传中，请稍候...";
+                break;
+            case "AsyUserFeatureTask"://使用证书
+                generateCertificate = params[0];
+                URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.RetrieveUserFeature;
+                dialogInfo = "身份识别中，请稍候...";
+                builder.add("cert", generateCertificate);
                 break;
             default:
                 break;
@@ -197,17 +204,23 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
-            case "AsyVideoTask":
-                file = new File(generateFace);
+            case "AsyCheckFaceTask"://活体验证
+                try {
+                    fileTemp = new File(generateFace);
+                    file = new Compressor(context).compressToFile(fileTemp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("video", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("img", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
             case "CreateCertificate":
             case "StoreCalligraphy":
             case "AsyRetrieveFeatureTask":
+            case "AsyUserFeatureTask":
                 request = new Request.Builder()
                         .url(URL)
                         .post(builder.build())

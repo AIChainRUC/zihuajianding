@@ -3,9 +3,12 @@ package com.lingyun_chain.zihua.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -24,16 +27,26 @@ import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
+import com.lingyun_chain.zihua.util.ECDSAUtil;
 import com.lingyun_chain.zihua.util.MD5Util;
 import com.lingyun_chain.zihua.util.OSutil;
+import com.lingyun_chain.zihua.util.SHAUtil;
 import com.lingyun_chain.zihua.util.UiUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
+
+import javax.script.Invocable;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 
 import id.zelory.compressor.Compressor;
 
@@ -65,16 +78,19 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     private String subjectWork = null;
     private String desc = "default";//书画基本信息
     private String delcare = "default";//制式声明
-    private String featureSeal = "default";//印章的特征值
+    private String featureSeal = "default1";//印章的特征值
     private String picHash = "default";//画全图的哈希值
     private String sig_r = "default"; //ecbsa签名_r
     private String sig_s = "default";//ecbsa签名_s
     public static final int SELECT_PIC_BY_TACK_PHOTO_IMAGE = 3;
     public static final int SELECT_PIC_BY_TACK_PHOTO_SEAL = 4;
     public static final int GO_TO_KEY = 5;
+    public static final int GO_TO_FACE = 6;
     private String generateSealFeature;//印章特征
     private TextView store_assetId;
     private TextView assetId_help;
+    private boolean isFaceVer = false;//是否进行了活体验证
+    private String assetID = "default";//数字资产在区块链上的键值
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +108,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             if (!TextUtils.equals(generatePublicKey, "default") && !TextUtils.equals(generatePrivateKey, "default")) {
                 store_text_key.setText("密钥文件已上传");
                 store_text_key.setEnabled(false);
+
             }
         }
         store_text_key.setOnClickListener(this);
@@ -115,6 +132,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         store_image_submit.setOnClickListener(this);
         store_assetId = (TextView) findViewById(R.id.store_assetId);
         assetId_help = (TextView) findViewById(R.id.assetId_help);
+
     }
 
     private void initToolbar() {
@@ -129,7 +147,13 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.store_text_key:
-                startActivityForResult(new Intent(StoreCalligraphyActivity.this, GenerateCertificateActivity.class),GO_TO_KEY);
+//                ECDSAUtil.jdkECDSA("hello","-----BEGIN PRIVATE KEY-----\n" +
+//                        "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg2s37G4uKJImgCkuj\n" +
+//                        "800/f/Z/475+NTqZAbslXVOdmhmhRANCAASOqTlpV9ABI/l5nqIqKtQhERcCJiXz\n" +
+//                        "+7Va4SnlXzwGaLek/rqbp9bWjIU3GSU7ETk0dDwgYkR5xu2D8+wSSVGv\n" +
+//                        "-----END PRIVATE KEY-----\n" +
+//                        "\n");
+                startActivityForResult(new Intent(StoreCalligraphyActivity.this, GenerateCertificateActivity.class), GO_TO_KEY);
                 break;
             case R.id.store_submit:
                 store_workName = store_workName_edt.getText().toString().trim();
@@ -154,9 +178,32 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     //picHash = "default";
                     //sig_r = "default";
                     //sig_s = "default";
-                    new AsyCreateAsset(StoreCalligraphyActivity.this,
-                            "StoreCalligraphy",
-                            desc, generatePublicKey, delcare, featureSeal, picHash, sig_r, sig_s).execute();
+                    assetID = SHAUtil.getSHA256StrJava(desc + generatePublicKey + delcare + featureSeal + picHash);//资产唯一的键值
+                    stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
+                    if (isFaceVer == true) {
+
+                        String signAssetId=ECDSAUtil.jdkECDSA(assetID, generatePrivateKey);//对资产ID进行签名
+                        new AsyCreateAsset(StoreCalligraphyActivity.this,
+                                "StoreCalligraphy",
+                                desc, generatePublicKey, delcare, featureSeal, picHash, sig_r, sig_s,signAssetId).execute();
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(StoreCalligraphyActivity.this);
+                        builder.setTitle("温馨提示");
+                        builder.setMessage("为了保证您的安全，我们建议您进行人脸识别");
+                        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                UiUtils.show("对不起，请您先进行人脸识别");
+                            }
+                        });
+                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                startActivityForResult(new Intent(StoreCalligraphyActivity.this, SignCertificateActivity.class), GO_TO_FACE);
+                            }
+                        });
+                        builder.create().show();
+                    }
                 } else {
                     UiUtils.show("请补充完整全部信息");
                 }
@@ -190,6 +237,10 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             default:
                 break;
         }
+    }
+    //转为json格式
+    private void stringToJson(String assetID, String desc, String generatePublicKey, String delcare, String featureSeal, String picHash, String sig_r, String sig_s) {
+
     }
 
     //打开相机拍照
@@ -253,10 +304,12 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     new AsySaveTask(this, "StoreCalligSave", picPath).execute();
                 }
-            } else if(requestCode==GO_TO_KEY){
+            } else if (requestCode == GO_TO_KEY) {
                 store_text_key.setText("密钥文件已上传");
                 store_text_key.setEnabled(false);
-            }else {
+            } else if (requestCode == GO_TO_FACE) {
+                isFaceVer = true;
+            } else {
                 //错误提示
                 UiUtils.show("拍照失败");
             }
@@ -313,7 +366,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
 
     public class AsyCreateAsset extends BaseAsyTask {
         private String status = "-1";
-        private String assetID = "default";//数字资产在区块链上的键值
+
 
         public AsyCreateAsset(Context context, String string, String... params) {
             super(context, string, params);

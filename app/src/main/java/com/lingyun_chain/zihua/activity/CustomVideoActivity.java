@@ -17,6 +17,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Chronometer;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -85,6 +87,11 @@ public class CustomVideoActivity extends BaseActivity implements View.OnClickLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //无title
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //全屏
+        getWindow().setFlags(WindowManager.LayoutParams. FLAG_FULLSCREEN ,
+                WindowManager.LayoutParams. FLAG_FULLSCREEN);
         setContentView(R.layout.activity_custom_video);
         initView();
     }
