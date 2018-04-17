@@ -1,10 +1,16 @@
 package com.lingyun_chain.zihua.fragement;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -21,10 +27,16 @@ import com.lingyun_chain.zihua.activity.SignCertificateActivity;
 import com.lingyun_chain.zihua.activity.StoreCalligraphyActivity;
 import com.lingyun_chain.zihua.adapter.HomeCarouselAdapter;
 import com.lingyun_chain.zihua.adapter.MyHomeListAdapter;
+import com.lingyun_chain.zihua.base.BaseAsyTask;
 import com.lingyun_chain.zihua.base.BaseFragement;
 import com.lingyun_chain.zihua.bean.HomeCarousel;
+import com.lingyun_chain.zihua.constants.IntentConstants;
 import com.lingyun_chain.zihua.util.UiUtils;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,6 +59,10 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
     private boolean isRunning = false;
     private AuToRunTask runTask;
     private MyHomeListAdapter adapter;
+    private String generatePublicKey = null;//公钥
+    private String generatePrivateKey = null;//私钥
+    private String generateCertificate = null;//证书
+    private String generateFaceFeature = null;//人脸特征
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,8 +74,16 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragement_shouye, container, false);
         main_list = (ListView) view.findViewById(R.id.main_list);
-        vpHomeTitle = (ViewPager)view.findViewById(R.id.vp_home_title);
+        vpHomeTitle = (ViewPager) view.findViewById(R.id.vp_home_title);
         pointGroup = (LinearLayout) view.findViewById(R.id.point_group);
+        sharedPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        editor = sharedPreference.edit();
+        if (sharedPreference != null) {
+            generatePublicKey = sharedPreference.getString("generatePublicKey", "default");
+            generatePrivateKey = sharedPreference.getString("generatePrivateKey", "default");
+            generateCertificate = sharedPreference.getString("generateCertificate", "default");
+            generateFaceFeature = sharedPreference.getString("generateCertificate", "default");
+        }
         initListView();
         if (picDatas == null) {
             //如果没有数据，就从网络中获取
@@ -71,6 +95,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         }
         return view;
     }
+
     @Override
     public void onPause() {
         if (runTask != null) {
@@ -79,6 +104,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         isRunning = false;
         super.onPause();
     }
+
     @Override
     public void onDestroyView() {
         if (runTask != null) {
@@ -87,6 +113,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         isRunning = false;
         super.onDestroyView();
     }
+
     /**
      * 初始化原点指示器
      */
@@ -161,7 +188,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         HomeCarousel homeCarousel;
         homeCarousel = new HomeCarousel(R.mipmap.next_icon, "www.baidu.com");
         picDatas.add(homeCarousel);
-        picDatas.add(new HomeCarousel(R.mipmap.ic_launcher,"www.baidu.com"));
+        picDatas.add(new HomeCarousel(R.mipmap.ic_launcher, "www.baidu.com"));
         initIndicator();
 //        homeCarousel.setImageView(R.mipmap.background);
 //        homeCarousel.setLink("www.baidu.com");
@@ -179,16 +206,39 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch (position) {
             case 0:
-                startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));//字画存链
+                if (!TextUtils.equals(generatePublicKey, "default") && !TextUtils.equals(generatePrivateKey, "default")) {
+                    new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+//                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                    builder.setTitle("温馨提示");
+//                    builder.setMessage("为了保证您的安全，我们建议您拍摄含眨眼动作的短视频进行人脸识别");
+////                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        UiUtils.show("对不起，请您先进行人脸识别");
+////                    }
+////                });
+//                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface dialog, int which) {
+//                            startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
+//                        }
+//                    });
+//                    builder.create().show();
+                    // startActivityForResult(new Intent(getActivity(), StoreCalligraphyActivity.class), GO_TO_FACE);//字画存链
+                } else {
+                    //还没有从服务器拿到证书
+                    UiUtils.show("对不起，请您先生成证书");
+                    startActivityForResult(new Intent(getActivity(), GenerateCertificateActivity.class), IntentConstants.GO_TO_KEY);
+                }
                 break;
             case 1:
                 startActivity(new Intent(getActivity(), IdentifyCalligraphyActivity.class));//字画鉴定页面
                 break;
             case 2:
-                startActivity(new Intent(getActivity(), GenerateCertificateActivity.class));
+                startActivity(new Intent(getActivity(), GenerateCertificateActivity.class));//生成证书
                 break;
             default:
-                startActivity(new Intent(getActivity(), SignCertificateActivity.class));
+                startActivity(new Intent(getActivity(), SignCertificateActivity.class));//
                 break;
         }
     }
@@ -234,6 +284,80 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
                 isRunning = false;
                 UiUtils.cancel(this);
             }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == IntentConstants.GO_TO_KEY) {
+                UiUtils.show("生成证书成功");
+                generatePublicKey=data.getStringExtra("generatePublicKey");
+                generatePrivateKey=data.getStringExtra("generatePrivateKey");
+                generateCertificate=data.getStringExtra("generateCertificate");
+                generateFaceFeature=data.getStringExtra("generateFaceFeature");
+                new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//                builder.setTitle("温馨提示");
+//                builder.setMessage("为了保证您的安全，我们建议您拍摄含眨眼动作的短视频进行人脸识别");
+////                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        UiUtils.show("对不起，请您先进行人脸识别");
+////                    }
+////                });
+//                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+//                        //startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
+//                    }
+//                });
+//                builder.create().show();
+                //startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));//字画存链
+            } else if (requestCode == IntentConstants.GO_TO_FACE) {
+                startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));
+            }
+        } else {
+            UiUtils.show("生成证书失败");
+        }
+    }
+
+    public class AsyUserFeatureTask extends BaseAsyTask {//根据证书拿到人脸特征
+        private String status = "-1";
+        private String featureFace = "default";
+
+        public AsyUserFeatureTask(Context context, String string, String... params) {
+            super(context, string, params);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                response = okHttpClient.newCall(request).execute();
+                string = response.body().string();
+                jsonObject = new JSONObject(string);
+                status = jsonObject.optString("code");
+                featureFace = jsonObject.optString("feature");
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return status;
+        }
+
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (!TextUtils.equals(s, "200")) {
+                featureFace = generateFaceFeature;
+            }
+            startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
+//            setResult(RESULT_OK);
+//            finish();
         }
     }
 }

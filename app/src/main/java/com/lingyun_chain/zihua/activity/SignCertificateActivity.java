@@ -37,6 +37,7 @@ import com.lingyun_chain.zihua.BuildConfig;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
+import com.lingyun_chain.zihua.constants.IntentConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.util.FileProvider7Util;
 import com.lingyun_chain.zihua.util.LogUtils;
@@ -62,10 +63,8 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
     //Toolbar相关
     private Toolbar toolbar;
     private Button sign_certi_btn;
-    private Button sign_using_btn;
-    public static final int RECORD_SYSTEM_VIDEO = 1;
-    public static final int SELECT_PIC_BY_TACK_PHOTO = 3;
-    public static final int GO_TO_KEY = 2;
+    //private Button sign_using_btn;
+
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书
@@ -85,8 +84,8 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
         //sign_certi_text = (TextView) findViewById(R.id.sign_certi_text);
         sign_certi_btn = (Button) findViewById(R.id.sign_certi_btn);
         sign_certi_btn.setOnClickListener(this);
-        sign_using_btn = (Button) findViewById(R.id.sign_using_btn);
-        sign_using_btn.setOnClickListener(this);
+        //sign_using_btn = (Button) findViewById(R.id.sign_using_btn);
+        //sign_using_btn.setOnClickListener(this);
         if (sharedPreference != null) {
             generatePublicKey = sharedPreference.getString("generatePublicKey", "default");
             generatePrivateKey = sharedPreference.getString("generatePrivateKey", "default");
@@ -140,7 +139,7 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, fileUri);
                             intent.putExtra(MediaStore.EXTRA_DURATION_LIMIT, 3); //限制的录制时长 以秒为单位
                             intent.putExtra(MediaStore.EXTRA_VIDEO_QUALITY, 0);
-                            startActivityForResult(intent, RECORD_SYSTEM_VIDEO);
+                            startActivityForResult(intent, IntentConstants.RECORD_SYSTEM_VIDEO);
                         }
                     });
                     builder.setCancelable(false);
@@ -153,13 +152,13 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
                 }
             });
 
-        } else if (v.getId() == R.id.sign_using_btn) {
-            new AsyUserFeatureTask(SignCertificateActivity.this, "AsyUserFeatureTask", generateCertificate).execute();
-//            setResult(RESULT_OK);
-//            finish();
+//        } else if (v.getId() == R.id.sign_using_btn) {
+//           // new AsyUserFeatureTask(SignCertificateActivity.this, "AsyUserFeatureTask", generateCertificate).execute();
+////            setResult(RESULT_OK);
+////            finish();
+//        }
         }
     }
-
     private File getOutputMediaFile() {
         if (!Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
             Toast.makeText(this, "请检查SDCard！", Toast.LENGTH_SHORT).show();
@@ -194,7 +193,7 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
                 photoUri = FileProvider7Util.getUriForFile(this, temp);
                 picPath = temp.getAbsolutePath();
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);//将拍取的照片保存到指定URI
-                startActivityForResult(intent, SELECT_PIC_BY_TACK_PHOTO);
+                startActivityForResult(intent, IntentConstants.SELECT_PIC_BY_TACK_PHOTO);
             } else {
                 UiUtils.show("对不起，您的手机的SD卡未插入，不能使用该功能");
             }
@@ -227,7 +226,7 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_OK) {
-            if (requestCode == RECORD_SYSTEM_VIDEO) {
+            if (requestCode == IntentConstants.RECORD_SYSTEM_VIDEO) {
                 stopRecord();
                 if (mCamera != null) {
                     mCamera.lock();
@@ -237,12 +236,12 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
                 LogUtils.d("currentVideoFilePath", currentVideoFilePath);
                 //new AsyDealVideo(SignCertificateActivity.this).execute();
                 //new AsyVideoTask(SignCertificateActivity.this, "AsyCheckFaceTask", currentVideoFilePath).execute();
-            } else if (requestCode == GO_TO_KEY) {
+            } else if (requestCode == IntentConstants.GO_TO_KEY) {
                 //sign_certi_text.setVisibility(View.GONE);
-                sign_using_btn.setClickable(true);
+                //sign_using_btn.setClickable(true);
             }
         } else {
-            if (requestCode == RECORD_SYSTEM_VIDEO) {
+            if (requestCode == IntentConstants.RECORD_SYSTEM_VIDEO) {
                 UiUtils.show("视频录制失败");
                 stopRecord();
                 if (mCamera != null) {
@@ -256,53 +255,7 @@ public class SignCertificateActivity extends BaseActivity implements View.OnClic
         }
     }
 
-    public class AsyUserFeatureTask extends BaseAsyTask {//使用证书
-        private String status = "-1";
-        private String featureFace2 = "default";
-        private double distance;
 
-        public AsyUserFeatureTask(Context context, String string, String... params) {
-            super(context, string, params);
-        }
-
-        @Override
-        protected String doInBackground(String... strings) {
-            try {
-                response = okHttpClient.newCall(request).execute();
-                string = response.body().string();
-                jsonObject = new JSONObject(string);
-                status = jsonObject.optString("code");
-                featureFace2 = jsonObject.optString("feature");
-                distance = MathUtil.sim_distance(Double.parseDouble(featureFace2), Double.parseDouble(featureFace));
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            return status;
-        }
-
-
-        @Override
-        protected void onPostExecute(String s) {
-            super.onPostExecute(s);
-            if (TextUtils.equals(s, "-1")) {
-                UiUtils.show("网络错误，请重试");
-            } else if (TextUtils.equals(s, "200")) {
-                if (distance <= 0.6) {
-                    UiUtils.show("人脸验证成功");
-                    setResult(RESULT_OK);
-                    finish();
-                } else {
-                    UiUtils.show("您好像不是本人哦，请重新拍照");
-                }
-            } else {
-                UiUtils.show("您好像不是本人哦，请重新拍照");
-            }
-//            setResult(RESULT_OK);
-//            finish();
-        }
-    }
 
     public class AsyFaceVerTask extends BaseAsyTask {
         private String status = "-1";

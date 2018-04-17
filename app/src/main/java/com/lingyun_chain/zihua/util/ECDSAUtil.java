@@ -28,9 +28,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
  * https://segmentfault.com/a/1190000012288285
  */
 public class ECDSAUtil {
-    private static String ALG_SIGN = "SHA256withECDSA";
-
-
+    private static String ALG_SIGN = "SHA1withECDSA";
 
     public static String sign(String key, String message) {
         try {

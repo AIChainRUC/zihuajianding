@@ -26,6 +26,7 @@ import android.widget.TextView;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
+import com.lingyun_chain.zihua.constants.IntentConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.util.FileProvider7Util;
 import com.lingyun_chain.zihua.util.FileUtil;
@@ -59,8 +60,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
     private Boolean isHaveSeal = false;
     private String sealKeyValue = "default";
     private String sealDecribal = "default";
-    private static final int SELECT_PIC_BY_TACK_PHOTO_SEAL = 5;
-    private static final int SELECT_PIC_BY_TACK_PHOTO_IMAGE = 6;
+
     private String generateSealFeature;
     protected String picPath = "default";
 
@@ -106,7 +106,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                 BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                     @Override
                     public void onGranted() {
-                        takePictures(SELECT_PIC_BY_TACK_PHOTO_SEAL);//打开相机拍照
+                        takePictures(IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL);//打开相机拍照
                     }
 
                     @Override
@@ -129,7 +129,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                 @Override
                 public void onGranted() {
-                    takePictures(SELECT_PIC_BY_TACK_PHOTO_IMAGE);//打开相机拍照
+                    takePictures(IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE);//打开相机拍照
                 }
 
                 @Override
@@ -144,7 +144,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_PIC_BY_TACK_PHOTO_SEAL) {
+            if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {
                 //picPath = FileUtil.getPath() + "identifyPhoto" + "/seal.jpg";
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     UiUtils.show("拍照成功");
@@ -158,7 +158,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
 //                        e.printStackTrace();
 //                    }
                 }
-            } else if (requestCode == SELECT_PIC_BY_TACK_PHOTO_IMAGE) {
+            } else if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE) {
                 identify_image_text.setText("图片已拍摄");
                 identify_image_text.setEnabled(false);
             } else {

@@ -36,6 +36,7 @@ import com.lingyun_chain.zihua.BuildConfig;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
+import com.lingyun_chain.zihua.constants.IntentConstants;
 import com.lingyun_chain.zihua.constants.URLConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.receiver.NetWorkChangerReceiver;
@@ -79,13 +80,8 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     private Button generate_camera;
     //private ImageView generate_ima;
     private TextView generate_text;
-
-
     private String picContent;//图片转为字符数组后的内容
-    //拍照对应RequestCode
-    public static final int SELECT_PIC_BY_TACK_PHOTO = 1;
-    //裁剪图片
-    private static final int CROP_PICTURE = 3;
+
     private String generateFaceFeature = "default";//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//公钥
@@ -203,7 +199,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_PIC_BY_TACK_PHOTO) {
+            if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO) {
 //                String[] pojo = {MediaStore.Images.Media.DATA};
 //                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
 //                if (cursor != null) {
@@ -333,7 +329,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 photoUri = FileProvider7Util.getUriForFile(this, temp);
                 picPath = temp.getAbsolutePath();
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);//将拍取的照片保存到指定URI
-                startActivityForResult(intent, SELECT_PIC_BY_TACK_PHOTO);
+                startActivityForResult(intent, IntentConstants.SELECT_PIC_BY_TACK_PHOTO);
             }
 
 //            if (Build.VERSION.SDK_INT >= 24) {
@@ -441,17 +437,17 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 mFile.delete();
             } else if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
-                generate_camera.setText("重新上传");
-                generate_camera.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (ButtonUtil.isFastDoubleClick()) {
-                            UiUtils.show("您的操作过于频繁，请稍候再试");
-                        } else {
-                            new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
-                        }
-                    }
-                });
+//                generate_camera.setText("重新上传");
+//                generate_camera.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (ButtonUtil.isFastDoubleClick()) {
+//                            UiUtils.show("您的操作过于频繁，请稍候再试");
+//                        } else {
+//                            new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+//                        }
+//                    }
+//                });
             } else {
                 UiUtils.show("人脸识别失败，请重试");
                 generate_camera.setText("拍照");
@@ -486,7 +482,12 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 editor.putString("generatePrivateKey", generatePrivateKey);
                 editor.putString("generateCertificate", generateCertificate);
                 editor.apply();
-                setResult(RESULT_OK);
+                Intent intent=new Intent();
+                intent.putExtra("generatePublicKey",generatePublicKey);
+                intent.putExtra("generatePrivateKey",generatePrivateKey);
+                intent.putExtra("generateCertificate",generateCertificate);
+                intent.putExtra("generateFaceFeature",generateFaceFeature);
+                setResult(RESULT_OK,intent);
                 finish();
             } else if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");

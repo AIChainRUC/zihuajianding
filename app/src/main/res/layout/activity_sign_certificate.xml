@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".activity.AdvicesActivity">
+
     <android.support.v7.widget.Toolbar
         android:id="@+id/toolbar_sign_certificate"
         android:layout_width="match_parent"
@@ -20,42 +21,44 @@
             android:textColor="#fff"
             android:textSize="20sp" />
     </android.support.v7.widget.Toolbar>
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="请拍摄完整面部进行验证"
-        android:textSize="20sp"
-        android:textColor="@color/main_hue"
         android:layout_gravity="center"
-        android:layout_marginTop="30dp"/>
+        android:layout_marginTop="30dp"
+        android:text="请拍摄完整面部进行验证"
+        android:textColor="@color/main_hue"
+        android:textSize="20sp" />
+
     <Button
         android:id="@+id/sign_certi_btn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/main_hue"
         android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
         android:layout_marginTop="20dp"
-        android:textColor="@color/text_color"
-        android:text="开始拍照"/>
+        android:layout_marginRight="20dp"
+        android:background="@color/main_hue"
+        android:text="开始拍照"
+        android:textColor="@color/text_color" />
     <!--<TextView-->
-        <!--android:id="@+id/sign_certi_text"-->
-        <!--android:layout_width="wrap_content"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:visibility="gone"-->
-        <!--android:layout_gravity="center"-->
-        <!--android:gravity="center"-->
-        <!--android:textColor="#FF00"-->
-        <!--android:textSize="25sp"-->
-        <!--android:layout_marginTop="20dp"/>-->
-    <Button
-        android:id="@+id/sign_using_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/main_hue"
-        android:textColor="@color/text_color"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:text="使用证书"/>
+    <!--android:id="@+id/sign_certi_text"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:visibility="gone"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:gravity="center"-->
+    <!--android:textColor="#FF00"-->
+    <!--android:textSize="25sp"-->
+    <!--android:layout_marginTop="20dp"/>-->
+    <!--<Button-->
+    <!--android:id="@+id/sign_using_btn"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@color/main_hue"-->
+    <!--android:textColor="@color/text_color"-->
+    <!--android:layout_marginLeft="20dp"-->
+    <!--android:layout_marginRight="20dp"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:text="使用证书"/>-->
 </LinearLayout>

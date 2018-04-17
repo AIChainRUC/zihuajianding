@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.RadioGroup;
@@ -31,6 +32,8 @@ public class MainActivity extends BaseActivity {
 
     private ShouYeFragement shouYe = null;
     private MyFragement myFragement = null;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,6 +52,7 @@ public class MainActivity extends BaseActivity {
             mFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
             registerReceiver(mReceiver, mFilter);
         }
+
     }
 
     @Override
@@ -56,7 +60,7 @@ public class MainActivity extends BaseActivity {
         super.onDestroy();
         if (mReceiver != null) {
             unregisterReceiver(mReceiver);
-        }else {
+        } else {
             mReceiver = new NetWorkChangerReceiver();
             unregisterReceiver(mReceiver);
         }
@@ -65,6 +69,7 @@ public class MainActivity extends BaseActivity {
     //再按一次退出
     // 双击退出
     private long exitTime = 0;
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (keyCode == KeyEvent.KEYCODE_BACK
@@ -90,23 +95,24 @@ public class MainActivity extends BaseActivity {
         assert toolbarTextView != null;
         toolbarTextView.setText("字画鉴定");
     }
+
     //处理俩个Fragement
-    private void initView(){
-        shouYe=new ShouYeFragement();
-        getSupportFragmentManager().beginTransaction().replace(R.id.main_content,shouYe).commit();
+    private void initView() {
+        shouYe = new ShouYeFragement();
+        getSupportFragmentManager().beginTransaction().replace(R.id.main_content, shouYe).commit();
         mTableTag = (RadioGroup) findViewById(R.id.tab_menu);
         mTableTag.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
-                if(checkedId==R.id.shouye){
-                    shouYe=new ShouYeFragement();
+                if (checkedId == R.id.shouye) {
+                    shouYe = new ShouYeFragement();
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.main_content, shouYe)
                             .commit();
                     toolbarTextView.setText("字画鉴定");
-                }else{
-                    myFragement=new MyFragement();
+                } else {
+                    myFragement = new MyFragement();
                     getSupportFragmentManager()
                             .beginTransaction()
                             .replace(R.id.main_content, myFragement)

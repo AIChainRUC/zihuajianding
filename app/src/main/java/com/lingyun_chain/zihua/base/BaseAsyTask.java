@@ -147,7 +147,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
             case "AsyUserFeatureTask"://使用证书
                 generateCertificate = params[0];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.RetrieveUserFeature;
-                dialogInfo = "身份识别中，请稍候...";
+                dialogInfo = "加载中，请稍候...";
                 builder.add("cert", generateCertificate);
                 break;
             default:
@@ -180,7 +180,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 }
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("im1", "face.jpg", RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;

@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
+import com.lingyun_chain.zihua.constants.IntentConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.util.ECDSAUtil;
 import com.lingyun_chain.zihua.util.FileProvider7Util;
@@ -56,7 +57,6 @@ import javax.script.ScriptException;
 
 import id.zelory.compressor.Compressor;
 
-import static com.lingyun_chain.zihua.activity.GenerateCertificateActivity.SELECT_PIC_BY_TACK_PHOTO;
 
 /**
  * 存链功能
@@ -88,14 +88,11 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     private String picHash = "default";//画全图的哈希值
     private String sig_r = "default"; //ecbsa签名_r
     private String sig_s = "default";//ecbsa签名_s
-    public static final int SELECT_PIC_BY_TACK_PHOTO_IMAGE = 3;
-    public static final int SELECT_PIC_BY_TACK_PHOTO_SEAL = 4;
-    public static final int GO_TO_KEY = 5;
-    public static final int GO_TO_FACE = 6;
+
     private String generateSealFeature;//印章特征
     private TextView store_assetId;
     private TextView assetId_help;
-    private boolean isFaceVer = false;//是否进行了活体验证
+    //private boolean isFaceVer = false;//是否进行了活体验证
     private String assetID = "default";//数字资产在区块链上的键值
     private String assetFilePath;//存链后用于上传字画照片到服务器
 
@@ -115,7 +112,6 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             if (!TextUtils.equals(generatePublicKey, "default") && !TextUtils.equals(generatePrivateKey, "default")) {
                 store_text_key.setText("密钥文件已上传");
                 store_text_key.setEnabled(false);
-
             }
         }
         store_text_key.setOnClickListener(this);
@@ -160,7 +156,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
 //                        "+7Va4SnlXzwGaLek/rqbp9bWjIU3GSU7ETk0dDwgYkR5xu2D8+wSSVGv\n" +
 //                        "-----END PRIVATE KEY-----\n" +
 //                        "\n");
-                startActivityForResult(new Intent(StoreCalligraphyActivity.this, GenerateCertificateActivity.class), GO_TO_KEY);
+                startActivityForResult(new Intent(StoreCalligraphyActivity.this, GenerateCertificateActivity.class), IntentConstants.GO_TO_KEY);
                 break;
             case R.id.store_submit:
                 store_workName = store_workName_edt.getText().toString().trim();
@@ -185,29 +181,29 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
 
                     String signAsset = ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
                     String jsonData = StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json//stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
-                    if (isFaceVer == true) {
-                        //String signAsset=ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
-                        //StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json
-                        new AsyCreateAsset(StoreCalligraphyActivity.this,
-                                "StoreCalligraphy", jsonData, assetFilePath, assetID).execute();
-                    } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(StoreCalligraphyActivity.this);
-                        builder.setTitle("温馨提示");
-                        builder.setMessage("为了保证您的安全，我们建议您进行人脸识别");
-                        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                UiUtils.show("对不起，请您先进行人脸识别");
-                            }
-                        });
-                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                startActivityForResult(new Intent(StoreCalligraphyActivity.this, SignCertificateActivity.class), GO_TO_FACE);
-                            }
-                        });
-                        builder.create().show();
-                    }
+                    new AsyCreateAsset(StoreCalligraphyActivity.this,
+                            "StoreCalligraphy", jsonData, assetFilePath, assetID).execute();
+//                    if (isFaceVer == true) {
+//                        //String signAsset=ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
+//                        //StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json
+//                    } else {
+//                        AlertDialog.Builder builder = new AlertDialog.Builder(StoreCalligraphyActivity.this);
+//                        builder.setTitle("温馨提示");
+//                        builder.setMessage("为了保证您的安全，我们建议您进行人脸识别");
+//                        builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                UiUtils.show("对不起，请您先进行人脸识别");
+//                            }
+//                        });
+//                        builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+//                            @Override
+//                            public void onClick(DialogInterface dialog, int which) {
+//                                startActivityForResult(new Intent(StoreCalligraphyActivity.this, SignCertificateActivity.class), GO_TO_FACE);
+//                            }
+//                        });
+//                        builder.create().show();
+                    // }
                 } else {
                     UiUtils.show("请补充完整全部信息");
                 }
@@ -216,8 +212,8 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                     @Override
                     public void onGranted() {
-                        UiUtils.hideInput(StoreCalligraphyActivity.this,store_image_submit);
-                        takePictures(SELECT_PIC_BY_TACK_PHOTO_IMAGE);//打开相机拍照
+                        UiUtils.hideInput(StoreCalligraphyActivity.this, store_image_submit);
+                        takePictures(IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE);//打开相机拍照
                     }
 
                     @Override
@@ -230,7 +226,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                     @Override
                     public void onGranted() {
-                        takePictures(SELECT_PIC_BY_TACK_PHOTO_SEAL);//打开相机拍照
+                        takePictures(IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL);//打开相机拍照
                     }
 
                     @Override
@@ -273,7 +269,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == SELECT_PIC_BY_TACK_PHOTO_IMAGE) {
+            if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE) {
 //                String[] pojo = {MediaStore.Images.Media.DATA};
 //                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
 //                if (cursor != null) {
@@ -302,7 +298,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                         e.printStackTrace();
                     }
                 }
-            } else if (requestCode == SELECT_PIC_BY_TACK_PHOTO_SEAL) {
+            } else if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {
 //                String[] pojo = {MediaStore.Images.Media.DATA};
 //                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
 //                if (cursor != null) {
@@ -316,12 +312,12 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     new AsySaveTask(this, "StoreCalligSave", picPath).execute();
                 }
-            } else if (requestCode == GO_TO_KEY) {
+            } else if (requestCode == IntentConstants.GO_TO_KEY) {
                 store_text_key.setText("密钥文件已上传");
                 store_text_key.setEnabled(false);
-            } else if (requestCode == GO_TO_FACE) {
-                isFaceVer = true;
-            } else {
+//            } else if (requestCode == IGO_TO_FACE) {
+//                //isFaceVer = true;
+//            } else {
                 //错误提示
                 UiUtils.show("拍照失败");
             }
