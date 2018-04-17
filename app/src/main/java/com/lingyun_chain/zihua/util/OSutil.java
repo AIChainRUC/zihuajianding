@@ -9,7 +9,7 @@ import android.os.Environment;
  */
 public class OSutil {
     //判断sd卡是否出在存在,防止SD卡不存在的情况下，APP崩溃
-    public static boolean isSdExist(){
+    public static boolean isSdExist() {
         return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
     }
 }

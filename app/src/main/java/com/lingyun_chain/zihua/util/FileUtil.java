@@ -1,6 +1,12 @@
 package com.lingyun_chain.zihua.util;
 
+import android.content.ContentResolver;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import java.io.File;
@@ -11,7 +17,27 @@ import java.text.DecimalFormat;
  * 文件工具类
  */
 public class FileUtil {
-    public static final String Cache = "data/data/com.lingyun.zihua/cache/image_manager_disk_cache";
+    public static final String Cache = "data/data/com.lingyun.zihua";
+
+    //本APP存放的目录
+    public static String getPath() {
+        String ROOT = "Lingyun_chain";
+        StringBuilder path = new StringBuilder();
+        if (OSutil.isSdExist()) {
+            path.append(Environment.getExternalStorageDirectory()
+                    .getAbsolutePath());
+            path.append(File.separator);// '/'
+            path.append(ROOT);// /mnt/sdcard/JZElec
+            //path.append(File.separator);// /data/data/包名/cache/
+        } else {
+            File filesDir = UiUtils.getContext().getCacheDir(); // cache
+            // getFileDir
+            // file
+            path.append(filesDir.getAbsolutePath());// /data/data/包名/cache
+            //path.append(File.separator);// /data/data/包名/cache/
+        }
+        return path.toString();
+    }
 
     /**
      * 在内存卡中新建一个目录（如果内存卡存在的话）
@@ -20,29 +46,17 @@ public class FileUtil {
      * @return 建立的File文件 SD卡路径/ZiHua/传入的参数值
      */
     public static File createDirs(String cache) {
-        String ROOT = "ZiHua";
-        StringBuilder path = new StringBuilder();
-        if (OSutil.isSdExist()) {
-            path.append(Environment.getExternalStorageDirectory()
-                    .getAbsolutePath());
-            path.append(File.separator);// '/'
-            path.append(ROOT);// /mnt/sdcard/JZElec
-            path.append(File.separator);
-            path.append(cache);// /mnt/sdcard/JZElec/cache
-        } else {
-            File filesDir = UiUtils.getContext().getCacheDir(); // cache
-            // getFileDir
-            // file
-            path.append(filesDir.getAbsolutePath());// /data/data/包名/cache
-            path.append(File.separator);// /data/data/包名/cache/
-            path.append(cache);// /data/data/包名/cache/cache
-        }
-        File file = new File(path.toString());
+        String path = getPath();
+        StringBuilder builderPath = new StringBuilder(path);
+
+        builderPath.append(cache);
+        File file = new File(builderPath.toString());
         if (!file.exists() || !file.isDirectory()) {
             file.mkdirs();// 创建文件夹
         }
         return file;
     }
+
 
     /**
      * 得到cache文件夹

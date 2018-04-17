@@ -8,6 +8,8 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -16,6 +18,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
@@ -29,6 +32,7 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.lingyun_chain.zihua.BuildConfig;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
@@ -36,10 +40,13 @@ import com.lingyun_chain.zihua.constants.URLConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.receiver.NetWorkChangerReceiver;
 import com.lingyun_chain.zihua.util.ButtonUtil;
+import com.lingyun_chain.zihua.util.FileProvider7Util;
+import com.lingyun_chain.zihua.util.FileUtil;
 import com.lingyun_chain.zihua.util.LogUtils;
 import com.lingyun_chain.zihua.util.OSutil;
 import com.lingyun_chain.zihua.util.RegularUtil;
 import com.lingyun_chain.zihua.util.UiUtils;
+import com.tencent.tinker.android.dex.util.FileUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,7 +56,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import id.zelory.compressor.Compressor;
 
@@ -76,11 +86,12 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     public static final int SELECT_PIC_BY_TACK_PHOTO = 1;
     //裁剪图片
     private static final int CROP_PICTURE = 3;
-    private String generateFaceFeature="default";//人脸特征
+    private String generateFaceFeature = "default";//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//公钥
     private String generateCertificate = null;//证书
     private Bitmap bitmap;
+    private Uri photoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -193,30 +204,20 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_PIC_BY_TACK_PHOTO) {
-                String[] pojo = {MediaStore.Images.Media.DATA};
-                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
-                if (cursor != null) {
-                    int columnIndex = cursor.getColumnIndexOrThrow(pojo[0]);
-                    cursor.moveToFirst();
-                    picPath = cursor.getString(columnIndex);
-                    if (Build.VERSION.SDK_INT < 14) {
-                        cursor.close();
-                    }
-                }
+//                String[] pojo = {MediaStore.Images.Media.DATA};
+//                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
+//                if (cursor != null) {
+//                    int columnIndex = cursor.getColumnIndexOrThrow(pojo[0]);
+//                    cursor.moveToFirst();
+//                    picPath = cursor.getString(columnIndex);
+//                    if (Build.VERSION.SDK_INT < 14) {
+//                        cursor.close();
+//                    }
+//                }
+                //picPath = FileUtil.getPath() + "img/generatePhoto" + "/face.jpg";
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
-//                    photoUri = Uri.fromFile(new File(picPath));
-//                    if (photoUri != null) {
-//                        //bitmap = BitmapFactory.decodeFile(picPath);
-//
-//                        //new AsyImageToStr().execute();
-//                    }
-//                    if (Build.VERSION.SDK_INT > 23) {
-//                        photoUri = FileProvider.getUriForFile(this, "com.lingyun.zihua.fileprovider", new File(picPath));
-//                        cropForN(picPath, CROP_PICTURE);
-//                    } else {
-//                        startPhotoZoom(photoUri, CROP_PICTURE);
-//                    }
+
                 } else {
                     //错误提示
                     UiUtils.show("拍照失败");
@@ -230,6 +231,8 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 //                    }
 //                }
 //            }
+        } else {
+            UiUtils.show("拍照失败");
         }
     }
 
@@ -314,11 +317,45 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     private void takePictures() {
         //执行拍照前，应该先判断SD卡是否存在
         if (OSutil.isSdExist()) {
+//            File file = new File(Environment.getExternalStorageDirectory(), "/generatePhoto/face.jpg");
+//            if (!file.getParentFile().exists()) file.getParentFile().mkdirs();
+//            photoUri = FileProvider.getUriForFile(GenerateCertificateActivity.this, "com.lingyun_chain.zihua.fileProvider", file);//通过FileProvider创建一个content类型的Uri
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            ContentValues values = new ContentValues();
-            photoUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-            startActivityForResult(intent, SELECT_PIC_BY_TACK_PHOTO);
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                String filename = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.CHINA)
+                        .format(new Date()) + ".jpg";
+                File temp = new File(Environment.getExternalStorageDirectory() + "/Lingyun_chain", filename);
+                if (!temp.getParentFile().exists()) {
+                    temp.getParentFile().mkdir();
+                }
+                if (temp.exists())
+                    temp.delete();
+                photoUri = FileProvider7Util.getUriForFile(this, temp);
+                picPath = temp.getAbsolutePath();
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);//将拍取的照片保存到指定URI
+                startActivityForResult(intent, SELECT_PIC_BY_TACK_PHOTO);
+            }
+
+//            if (Build.VERSION.SDK_INT >= 24) {
+//                photoUri = FileProvider.getUriForFile(GenerateCertificateActivity.this, "com.lingyun_chain.zihua.fileProvider", temp);
+//            } else {
+//                photoUri = Uri.fromFile(temp);
+//            }
+//           //处理授权问题
+//            List<ResolveInfo> resInfoList = getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
+//            for (ResolveInfo resolveInfo : resInfoList) {
+//                String packageName = resolveInfo.activityInfo.packageName;
+//                grantUriPermission(packageName, photoUri,
+//                        Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+//            }
+
+
+//            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+//            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//            ContentValues values = new ContentValues();
+//            photoUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
+            //startActivityForResult(intent, SELECT_PIC_BY_TACK_PHOTO);
         } else {
             UiUtils.show("对不起，您的手机的SD卡未插入，不能使用该功能");
         }

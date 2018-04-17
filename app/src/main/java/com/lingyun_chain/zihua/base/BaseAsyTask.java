@@ -5,8 +5,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.lingyun_chain.zihua.constants.URLConstants;
+import com.lingyun_chain.zihua.util.LogUtils;
 
 import org.json.JSONObject;
 
@@ -44,6 +46,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     protected String string;
     protected JSONObject jsonObject;
     protected final MediaType MEDIA_TYPE_JPG = MediaType.parse("image/jpeg");
+    protected final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
     //人脸
     private String generateFace;
     private String faceFeature;
@@ -62,6 +65,8 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     private String defaultGrain = "0";//印章图片是否考虑纹理，值为0或1
     private String assetId;
     private String generateCertificate;
+    private String jsondata;
+    private String assetID;
 
     public BaseAsyTask() {
 
@@ -76,7 +81,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
         this.context = context;
         this.TAG = TAG;
         switch (TAG) {
-            case "GenerateFace":
+            case "GenerateFace"://
                 generateFace = params[0];//图片的内容
                 //builder.add("im1", generateFace);
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.FaceURL;
@@ -95,22 +100,25 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 builder.add("desc", desc);
                 break;
             case "StoreCalligraphy":
-                desc = params[0];
-                authorPUBKEY = params[1];
-                delcare = params[2];
-                featureSeal = params[3];
-                picHash = params[4];
-                sig_r = params[5];
-                sig_s = params[6];
+                jsondata = params[0];
+                generateFace = params[1];
+                assetID = params[2];
+//                desc = params[0];
+//                authorPUBKEY = params[1];
+//                delcare = params[2];
+//                featureSeal = params[3];
+//                picHash = params[4];
+//                sig_r = params[5];
+//                sig_s = params[6];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.CreateAssetURL;
                 dialogInfo = "字画存链中，请稍候...";
-                builder.add("desc", desc);
-                builder.add("authorPUBKEY", authorPUBKEY);
-                builder.add("delcare", delcare);
-                builder.add("feature", featureSeal);
-                builder.add("picHash", picHash);
-                builder.add("sig_r", sig_r);
-                builder.add("sig_s", sig_s);
+//                builder.add("desc", desc);
+//                builder.add("authorPUBKEY", authorPUBKEY);
+//                builder.add("delcare", delcare);
+//                builder.add("feature", featureSeal);
+//                builder.add("picHash", picHash);
+//                builder.add("sig_r", sig_r);
+//                builder.add("sig_s", sig_s);
                 break;
             case "StoreCalligSave":
                 generateFace = params[0];//图片的内容
@@ -118,13 +126,13 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.SaveURL;
                 dialogInfo = "图片识别中，请稍候...";
                 break;
-            case "AsyRetrieveFeatureTask":
+            case "AsyRetrieveFeatureTask"://获取链上字画印章特征
                 assetId = params[0];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.RetrieveFeatureURL;
                 dialogInfo = "字画键值识别中，请稍候...";
                 builder.add("assetID", assetId);
                 break;
-            case "AsyCheckTask":
+            case "AsyHashTask":
                 generateFace = params[0];//图片的内容
                 featureSeal = params[1];
                 //builder.add("im1", generateFace);
@@ -163,7 +171,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
         pDialog.setIndeterminate(false);
         pDialog.show();
         switch (TAG) {
-            case "GenerateFace":
+            case "GenerateFace"://证书生成部分，人脸特征的提取
                 try {
                     fileTemp = new File(generateFace);
                     file = new Compressor(context).compressToFile(fileTemp);
@@ -172,17 +180,19 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 }
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("im1", "face.jpg", RequestBody.create(MEDIA_TYPE_JPG, file))
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
-            case "StoreCalligSave":
+            case "StoreCalligSave"://字画存链,字画印章特征值提取
                 try {
                     fileTemp = new File(generateFace);
                     file = new Compressor(context).compressToFile(fileTemp);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                LogUtils.d("file", generateFace);
+                LogUtils.d("file.name", file.getName());
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
@@ -190,7 +200,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
-            case "AsyCheckTask":
+            case "AsyHashTask"://字画鉴定
                 try {
                     fileTemp = new File(generateFace);
                     file = new Compressor(context).compressToFile(fileTemp);
@@ -204,7 +214,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
-            case "AsyCheckFaceTask"://活体验证
+            case "AsyCheckFaceTask"://活体验证，人脸验证
                 try {
                     fileTemp = new File(generateFace);
                     file = new Compressor(context).compressToFile(fileTemp);
@@ -217,10 +227,23 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
-            case "CreateCertificate":
-            case "StoreCalligraphy":
-            case "AsyRetrieveFeatureTask":
-            case "AsyUserFeatureTask":
+            case "StoreCalligraphy"://字画存链
+                try {
+                    fileTemp = new File(generateFace);
+                    file = new Compressor(context).compressToFile(fileTemp);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                fileBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("img", assetID, RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("DATA", "null", RequestBody.create(MEDIA_TYPE_JSON, jsondata))
+                        .build();
+                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+                break;
+            case "CreateCertificate"://证书生成
+            case "AsyRetrieveFeatureTask"://获取链上字画印章特征
+            case "AsyUserFeatureTask"://活体验证中，查找链上的人脸特征
                 request = new Request.Builder()
                         .url(URL)
                         .post(builder.build())

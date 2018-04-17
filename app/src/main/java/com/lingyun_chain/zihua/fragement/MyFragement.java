@@ -70,8 +70,7 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
         super.onResume();
         //如果sd卡存在
         if (isSdExist) {
-            fizeSize = FileUtil.getAutoFileOrFilesSize(Environment.getExternalStorageDirectory()+"/Pictures");
-            LogUtils.d("hjs", Environment.getExternalStorageDirectory()+"/Pictures");
+            fizeSize = FileUtil.getAutoFileOrFilesSize(FileUtil.getPath());
         } else {
             fizeSize = FileUtil.getAutoFileOrFilesSize(FileUtil.Cache);
         }

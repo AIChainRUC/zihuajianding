@@ -13,6 +13,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -28,9 +29,11 @@ import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.util.ECDSAUtil;
+import com.lingyun_chain.zihua.util.FileProvider7Util;
 import com.lingyun_chain.zihua.util.MD5Util;
 import com.lingyun_chain.zihua.util.OSutil;
 import com.lingyun_chain.zihua.util.SHAUtil;
+import com.lingyun_chain.zihua.util.StringUtil;
 import com.lingyun_chain.zihua.util.UiUtils;
 
 import org.json.JSONException;
@@ -41,7 +44,10 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -91,6 +97,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     private TextView assetId_help;
     private boolean isFaceVer = false;//是否进行了活体验证
     private String assetID = "default";//数字资产在区块链上的键值
+    private String assetFilePath;//存链后用于上传字画照片到服务器
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -172,20 +179,17 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                         && !subjectWork.isEmpty()
                         && !TextUtils.equals(featureSeal, "default")
                         && !TextUtils.equals(picHash, "default")) {
-                    desc = store_workName + " " + store_workSize + " " + " " + creationYear + " " + classificationWork + " " + materialWork + " " + subjectWork;
-                    //delcare = "default";
-                    //featureSeal = "default";
-                    //picHash = "default";
-                    //sig_r = "default";
-                    //sig_s = "default";
-                    assetID = SHAUtil.getSHA256StrJava(desc + generatePublicKey + delcare + featureSeal + picHash);//资产唯一的键值
-                    stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
-                    if (isFaceVer == true) {
+                    //desc = store_workName + " " + store_workSize + " " + " " + creationYear + " " + classificationWork + " " + materialWork + " " + subjectWork;
+                    desc = StringUtil.stringDescToJson(store_workName, store_workSize, creationYear, classificationWork, materialWork, subjectWork);//书画基本信息转化为json格式
+                    assetID = SHAUtil.getSHA256StrJava(desc + generatePublicKey + delcare + featureSeal + picHash);//资产唯一的键值,留给用户看的
 
-                        String signAssetId=ECDSAUtil.jdkECDSA(assetID, generatePrivateKey);//对资产ID进行签名
+                    String signAsset = ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
+                    String jsonData = StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json//stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
+                    if (isFaceVer == true) {
+                        //String signAsset=ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
+                        //StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json
                         new AsyCreateAsset(StoreCalligraphyActivity.this,
-                                "StoreCalligraphy",
-                                desc, generatePublicKey, delcare, featureSeal, picHash, sig_r, sig_s,signAssetId).execute();
+                                "StoreCalligraphy", jsonData, assetFilePath, assetID).execute();
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(StoreCalligraphyActivity.this);
                         builder.setTitle("温馨提示");
@@ -212,6 +216,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                     @Override
                     public void onGranted() {
+                        UiUtils.hideInput(StoreCalligraphyActivity.this,store_image_submit);
                         takePictures(SELECT_PIC_BY_TACK_PHOTO_IMAGE);//打开相机拍照
                     }
 
@@ -238,22 +243,28 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 break;
         }
     }
-    //转为json格式
-    private void stringToJson(String assetID, String desc, String generatePublicKey, String delcare, String featureSeal, String picHash, String sig_r, String sig_s) {
-
-    }
 
     //打开相机拍照
     private void takePictures(int TAG) {
         //执行拍照前，应该先判断SD卡是否存在
         if (OSutil.isSdExist()) {
             Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            ContentValues values = new ContentValues();
-            photoUri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-            intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-            startActivityForResult(intent, TAG);
-        } else {
-            UiUtils.show("对不起，您的手机的SD卡未插入，不能使用该功能");
+            if (intent.resolveActivity(getPackageManager()) != null) {
+                String filename = new SimpleDateFormat("yyyyMMdd-HHmmss", Locale.CHINA)
+                        .format(new Date()) + ".jpg";
+                File temp = new File(Environment.getExternalStorageDirectory() + "/Lingyun_chain", filename);
+                if (!temp.getParentFile().exists()) {
+                    temp.getParentFile().mkdir();
+                }
+                if (temp.exists())
+                    temp.delete();
+                photoUri = FileProvider7Util.getUriForFile(this, temp);
+                picPath = temp.getAbsolutePath();
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);//将拍取的照片保存到指定URI
+                startActivityForResult(intent, TAG);
+            } else {
+                UiUtils.show("对不起，您的手机的SD卡未插入，不能使用该功能");
+            }
         }
     }
 
@@ -263,22 +274,23 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == SELECT_PIC_BY_TACK_PHOTO_IMAGE) {
-                String[] pojo = {MediaStore.Images.Media.DATA};
-                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
-                if (cursor != null) {
-                    int columnIndex = cursor.getColumnIndexOrThrow(pojo[0]);
-                    cursor.moveToFirst();
-                    picPath = cursor.getString(columnIndex);
-                    if (Build.VERSION.SDK_INT < 14) {
-                        cursor.close();
-                    }
-                }
+//                String[] pojo = {MediaStore.Images.Media.DATA};
+//                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
+//                if (cursor != null) {
+//                    int columnIndex = cursor.getColumnIndexOrThrow(pojo[0]);
+//                    cursor.moveToFirst();
+//                    picPath = cursor.getString(columnIndex);
+//                    if (Build.VERSION.SDK_INT < 14) {
+//                        cursor.close();
+//                    }
+//                }
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     File fileTemp = new File(picPath);
                     File file;
                     try {
                         file = new Compressor(this).compressToFile(fileTemp);
                         picHash = MD5Util.getFileMD5String(file);
+                        assetFilePath = picPath;//对图片重新命名
                         if (!TextUtils.equals(picHash, "default")) {
                             store_image_submit.setText("图片成功提交");
                             store_image_submit.setTextColor(R.color.colorAccent);
@@ -291,16 +303,16 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     }
                 }
             } else if (requestCode == SELECT_PIC_BY_TACK_PHOTO_SEAL) {
-                String[] pojo = {MediaStore.Images.Media.DATA};
-                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
-                if (cursor != null) {
-                    int columnIndex = cursor.getColumnIndexOrThrow(pojo[0]);
-                    cursor.moveToFirst();
-                    picPath = cursor.getString(columnIndex);
-                    if (Build.VERSION.SDK_INT < 14) {
-                        cursor.close();
-                    }
-                }
+//                String[] pojo = {MediaStore.Images.Media.DATA};
+//                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
+//                if (cursor != null) {
+//                    int columnIndex = cursor.getColumnIndexOrThrow(pojo[0]);
+//                    cursor.moveToFirst();
+//                    picPath = cursor.getString(columnIndex);
+//                    if (Build.VERSION.SDK_INT < 14) {
+//                        cursor.close();
+//                    }
+//                }
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     new AsySaveTask(this, "StoreCalligSave", picPath).execute();
                 }
@@ -399,7 +411,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     string = response.body().string();
                     jsonObject = new JSONObject(string);
                     status = jsonObject.optString("code");
-                    assetID = jsonObject.optString("assetID");
+                    //assetID = jsonObject.optString("assetID");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

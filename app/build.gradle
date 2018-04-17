@@ -6,7 +6,6 @@ bugly {
     debug = true
 }
 android {
-    compileSdkVersion 27
     defaultConfig {
         applicationId "com.lingyun_chain.zihua"
         minSdkVersion 17
@@ -21,12 +20,13 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileSdkVersion 27
     buildToolsVersion '27.0.3'
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-    implementation 'com.android.support:appcompat-v7:27.1.0'
+    implementation 'com.android.support:appcompat-v7:27.0.1'
     implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     implementation 'com.tencent.bugly:crashreport_upgrade:latest.release'
     implementation 'com.tencent.bugly:nativecrashreport:latest.release'
@@ -40,5 +40,4 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.1'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
     implementation files('libs/isoviewer-1.0-RC-27.jar')
-    implementation files('libs/commons-codec-1.11.jar')
 }

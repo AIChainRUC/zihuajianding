@@ -23,6 +23,11 @@
     <!-- 保存资源到SD卡 -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <!-- 腾讯bugly需要权限结束 -->
+    <!--视频需要权限开始-->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!--视频需要权限结束-->
     <application
         android:name=".base.BaseApplication"
         android:allowBackup="true"
@@ -55,7 +60,7 @@
         <activity android:name=".activity.UserHelp" />
         <provider
             android:name="android.support.v4.content.FileProvider"
-            android:authorities="com.lingyun_chain.zihua.fileprovider"
+            android:authorities="com.lingyun_chain.zihua.fileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
@@ -63,8 +68,6 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".activity.CustomVideoActivity"
-            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>
