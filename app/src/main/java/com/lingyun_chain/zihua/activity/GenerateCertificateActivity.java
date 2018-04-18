@@ -3,56 +3,41 @@ package com.lingyun_chain.zihua.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.lingyun_chain.zihua.BuildConfig;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
 import com.lingyun_chain.zihua.constants.IntentConstants;
-import com.lingyun_chain.zihua.constants.URLConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.receiver.NetWorkChangerReceiver;
 import com.lingyun_chain.zihua.util.ButtonUtil;
 import com.lingyun_chain.zihua.util.FileProvider7Util;
-import com.lingyun_chain.zihua.util.FileUtil;
-import com.lingyun_chain.zihua.util.LogUtils;
 import com.lingyun_chain.zihua.util.OSutil;
 import com.lingyun_chain.zihua.util.RegularUtil;
 import com.lingyun_chain.zihua.util.UiUtils;
-import com.tencent.tinker.android.dex.util.FileUtils;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -82,7 +67,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     private TextView generate_text;
     private String picContent;//图片转为字符数组后的内容
 
-    private String generateFaceFeature = "default";//人脸特征
+    private String generateFaceFeature;//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//公钥
     private String generateCertificate = null;//证书

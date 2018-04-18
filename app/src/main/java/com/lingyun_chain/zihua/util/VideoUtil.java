@@ -1,23 +1,17 @@
 package com.lingyun_chain.zihua.util;
 
 import android.content.Context;
-import android.media.MediaMetadataRetriever;
 
 import com.coremedia.iso.boxes.Container;
-import com.coremedia.iso.boxes.TimeToSampleBox;
 import com.googlecode.mp4parser.authoring.Movie;
 import com.googlecode.mp4parser.authoring.Track;
 import com.googlecode.mp4parser.authoring.builder.DefaultMp4Builder;
 import com.googlecode.mp4parser.authoring.container.mp4.MovieCreator;
 import com.googlecode.mp4parser.authoring.tracks.AppendTrack;
-import com.googlecode.mp4parser.authoring.tracks.CroppedTrack;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 

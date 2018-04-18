@@ -1,6 +1,5 @@
 package com.lingyun_chain.zihua.bean;
 
-import android.widget.ImageView;
 //主页的viewPager实体类
 public class HomeCarousel {
     private int imageView;

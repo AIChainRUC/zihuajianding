@@ -3,20 +3,11 @@ package com.lingyun_chain.zihua.activity;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.res.AssetManager;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
@@ -31,6 +22,7 @@ import com.lingyun_chain.zihua.constants.IntentConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.util.ECDSAUtil;
 import com.lingyun_chain.zihua.util.FileProvider7Util;
+import com.lingyun_chain.zihua.util.LogUtils;
 import com.lingyun_chain.zihua.util.MD5Util;
 import com.lingyun_chain.zihua.util.OSutil;
 import com.lingyun_chain.zihua.util.SHAUtil;
@@ -41,19 +33,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 
 import id.zelory.compressor.Compressor;
 
@@ -178,11 +162,10 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     //desc = store_workName + " " + store_workSize + " " + " " + creationYear + " " + classificationWork + " " + materialWork + " " + subjectWork;
                     desc = StringUtil.stringDescToJson(store_workName, store_workSize, creationYear, classificationWork, materialWork, subjectWork);//书画基本信息转化为json格式
                     assetID = SHAUtil.getSHA256StrJava(desc + generatePublicKey + delcare + featureSeal + picHash);//资产唯一的键值,留给用户看的
-
                     String signAsset = ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
                     String jsonData = StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json//stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
                     new AsyCreateAsset(StoreCalligraphyActivity.this,
-                            "StoreCalligraphy", jsonData, assetFilePath, assetID).execute();
+                            "StoreCalligraphy", jsonData).execute();
 //                    if (isFaceVer == true) {
 //                        //String signAsset=ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
 //                        //StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json
@@ -372,7 +355,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    public class AsyCreateAsset extends BaseAsyTask {
+    public class AsyCreateAsset extends BaseAsyTask {//上传图片
         private String status = "-1";
 
 
@@ -386,13 +369,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络有问题，请稍候再试");
             } else if (TextUtils.equals(s, "200")) {
-                UiUtils.show("恭喜您，存链成功");
-                editor.putString("assetID", assetID);
-                editor.apply();
-                store_assetId.setText(assetID);
-                store_assetId.setVisibility(View.VISIBLE);
-                assetId_help.setVisibility(View.VISIBLE);
-                storeSubmit_btn.setVisibility(View.GONE);
+                new AsyUploadImageTask(StoreCalligraphyActivity.this, "AsyUploadImageTask", assetFilePath, assetID).execute();
                 //finish();
             } else {
                 UiUtils.show("存链失败，请重试");
@@ -408,6 +385,50 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     jsonObject = new JSONObject(string);
                     status = jsonObject.optString("code");
                     //assetID = jsonObject.optString("assetID");
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return status;
+        }
+    }
+
+    public class AsyUploadImageTask extends BaseAsyTask {
+        private String status = "-1";
+
+        public AsyUploadImageTask(Context context, String string, String... params) {
+            super(context, string, params);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+            if (TextUtils.equals(s, "-1")) {
+                UiUtils.show("网络有问题，请稍候再试");
+            } else if(TextUtils.equals(s, "200")){
+                UiUtils.show("恭喜您，存链成功");
+                editor.putString("assetID", assetID);
+                editor.apply();
+                store_assetId.setText(assetID);
+                store_assetId.setVisibility(View.VISIBLE);
+                assetId_help.setVisibility(View.VISIBLE);
+                storeSubmit_btn.setVisibility(View.GONE);
+            }else {
+                UiUtils.show("存链失败，请重试");
+            }
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                if (okHttpClient != null) {
+                    response = okHttpClient.newCall(request).execute();
+                    LogUtils.d("response",response.toString());
+                    string = response.body().string();
+                    jsonObject = new JSONObject(string);
+                    status = jsonObject.optString("code");
                 }
             } catch (IOException e) {
                 e.printStackTrace();

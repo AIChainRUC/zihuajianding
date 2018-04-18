@@ -207,7 +207,8 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         switch (position) {
             case 0:
                 if (!TextUtils.equals(generatePublicKey, "default") && !TextUtils.equals(generatePrivateKey, "default")) {
-                    new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+                    startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));
+                    //new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
 //                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 //                    builder.setTitle("温馨提示");
 //                    builder.setMessage("为了保证您的安全，我们建议您拍摄含眨眼动作的短视频进行人脸识别");
@@ -238,7 +239,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
                 startActivity(new Intent(getActivity(), GenerateCertificateActivity.class));//生成证书
                 break;
             default:
-                startActivity(new Intent(getActivity(), SignCertificateActivity.class));//
+                //startActivity(new Intent(getActivity(), SignCertificateActivity.class));//
                 break;
         }
     }
@@ -293,10 +294,10 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == IntentConstants.GO_TO_KEY) {
                 UiUtils.show("生成证书成功");
-                generatePublicKey=data.getStringExtra("generatePublicKey");
-                generatePrivateKey=data.getStringExtra("generatePrivateKey");
-                generateCertificate=data.getStringExtra("generateCertificate");
-                generateFaceFeature=data.getStringExtra("generateFaceFeature");
+                generatePublicKey = data.getStringExtra("generatePublicKey");
+                generatePrivateKey = data.getStringExtra("generatePrivateKey");
+                generateCertificate = data.getStringExtra("generateCertificate");
+                generateFaceFeature = data.getStringExtra("generateFaceFeature");
                 new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
 //                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 //                builder.setTitle("温馨提示");
@@ -355,7 +356,24 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
             if (!TextUtils.equals(s, "200")) {
                 featureFace = generateFaceFeature;
             }
-            startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
+            AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+            builder.setTitle("温馨提示");
+            builder.setMessage("为了保证您的安全，我们建议您拍摄含眨眼动作的短视频进行人脸识别");
+////                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+////                    @Override
+////                    public void onClick(DialogInterface dialog, int which) {
+////                        UiUtils.show("对不起，请您先进行人脸识别");
+////                    }
+//              });
+            builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                  //  new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+                    startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
+                }
+            });
+            builder.create().show();
+            //  startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
 //            setResult(RESULT_OK);
 //            finish();
         }

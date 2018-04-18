@@ -1,9 +1,8 @@
 package com.lingyun_chain.zihua.util;
 
 
-
-
 import org.apache.commons.codec.binary.Base64;
+
 import java.io.UnsupportedEncodingException;
 
 

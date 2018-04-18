@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.lingyun_chain.zihua.R;
 import com.tencent.bugly.Bugly;
-import com.tencent.bugly.crashreport.CrashReport;
 
 /**
  * 开始界面

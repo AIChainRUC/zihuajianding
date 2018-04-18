@@ -2,7 +2,6 @@ package com.lingyun_chain.zihua.util;
 
 import android.content.Context;
 import android.content.res.Resources;
-import android.os.Handler;
 import android.view.Gravity;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;

@@ -7,40 +7,48 @@
     android:orientation="vertical"
     tools:context=".activity.AdvicesActivity">
 
-    <android.support.v7.widget.Toolbar
-        android:id="@+id/toolbar_sign_certificate"
+    <!--<android.support.v7.widget.Toolbar-->
+    <!--android:id="@+id/toolbar_sign_certificate"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:background="@color/main_hue">-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:text="证书使用"-->
+    <!--android:textColor="#fff"-->
+    <!--android:textSize="20sp" />-->
+    <!--</android.support.v7.widget.Toolbar>-->
+
+    <!--<TextView-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:layout_marginTop="30dp"-->
+    <!--android:text="请拍摄完整面部进行验证"-->
+    <!--android:textColor="@color/main_hue"-->
+    <!--android:textSize="20sp" />-->
+
+    <com.cjt2325.cameralibrary.JCameraView
+        android:id="@+id/videoFace"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/main_hue">
+        android:layout_height="match_parent"
+        app:duration_max="5000"
+        app:iconMargin="20dp"
+        app:iconSize="30dp" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:text="证书使用"
-            android:textColor="#fff"
-            android:textSize="20sp" />
-    </android.support.v7.widget.Toolbar>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="30dp"
-        android:text="请拍摄完整面部进行验证"
-        android:textColor="@color/main_hue"
-        android:textSize="20sp" />
-
-    <Button
-        android:id="@+id/sign_certi_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginTop="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@color/main_hue"
-        android:text="开始拍照"
-        android:textColor="@color/text_color" />
+    <!--<Button-->
+    <!--android:id="@+id/sign_certi_btn"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="20dp"-->
+    <!--android:layout_marginTop="20dp"-->
+    <!--android:layout_marginRight="20dp"-->
+    <!--android:background="@color/main_hue"-->
+    <!--android:text="开始拍照"-->
+    <!--android:textColor="@color/text_color" />-->
     <!--<TextView-->
     <!--android:id="@+id/sign_certi_text"-->
     <!--android:layout_width="wrap_content"-->

@@ -2,10 +2,8 @@ package com.lingyun_chain.zihua.activity;
 
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.WindowManager;
 import android.widget.RadioGroup;
@@ -16,7 +14,6 @@ import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.fragement.MyFragement;
 import com.lingyun_chain.zihua.fragement.ShouYeFragement;
-import com.lingyun_chain.zihua.other.ActivityCollector;
 import com.lingyun_chain.zihua.receiver.NetWorkChangerReceiver;
 
 /**

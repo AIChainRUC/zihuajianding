@@ -4,24 +4,20 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.activity.AboutUsActivity;
 import com.lingyun_chain.zihua.activity.AdvicesActivity;
-import com.lingyun_chain.zihua.activity.LoginActivity;
 import com.lingyun_chain.zihua.activity.UserHelp;
 import com.lingyun_chain.zihua.base.BaseFragement;
 import com.lingyun_chain.zihua.util.FileUtil;
-import com.lingyun_chain.zihua.util.LogUtils;
 import com.lingyun_chain.zihua.util.OSutil;
 import com.lingyun_chain.zihua.util.UiUtils;
 
@@ -36,7 +32,7 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
     private RelativeLayout helpRelative;
     private RelativeLayout layout_catch;
     private TextView cahchSize;
-    private Button logOut;
+    //private Button logOut;
     String fizeSize = "0B";
     private Boolean isSdExist;
 
@@ -56,8 +52,8 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
         contact_our.setOnClickListener(this);
         helpRelative = (RelativeLayout) mView.findViewById(R.id.help);
         helpRelative.setOnClickListener(this);
-        logOut = (Button) mView.findViewById(R.id.logOut);
-        logOut.setOnClickListener(this);
+        //logOut = (Button) mView.findViewById(R.id.logOut);
+        //logOut.setOnClickListener(this);
         layout_catch = (RelativeLayout) mView.findViewById(R.id.layout_cache);
         layout_catch.setOnClickListener(this);
         cahchSize = (TextView) mView.findViewById(R.id.cache_size);
@@ -89,9 +85,9 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
             case R.id.help:
                 startActivity(new Intent(getActivity(), UserHelp.class));
                 break;
-            case R.id.logOut:
-                startActivity(new Intent(getActivity(), LoginActivity.class));
-                getActivity().finish();
+//            case R.id.logOut:
+//                startActivity(new Intent(getActivity(), LoginActivity.class));
+//                getActivity().finish();
             case R.id.layout_cache:
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
                 dialog.setMessage("要清除缓存吗？");
@@ -106,13 +102,13 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
                     public void onClick(DialogInterface dialog, int which) {
                         File file;
                         if (isSdExist) {
-                            file = new File(getActivity().getExternalCacheDir() + "/topic");
+                            file = new File(getActivity().getExternalCacheDir() + "/Lingyun_chain");
                         } else {
                             file = new File(FileUtil.Cache);
                         }
                         FileUtil.RecursionDeleteFile(file);//递归删除文件
                         if (isSdExist) {
-                            fizeSize = FileUtil.getAutoFileOrFilesSize(getActivity().getExternalCacheDir() + "/topic");
+                            fizeSize = FileUtil.getAutoFileOrFilesSize(getActivity().getExternalCacheDir() + "/Lingyun_chain");
                         } else {
                             fizeSize = FileUtil.getAutoFileOrFilesSize(FileUtil.Cache);
                         }

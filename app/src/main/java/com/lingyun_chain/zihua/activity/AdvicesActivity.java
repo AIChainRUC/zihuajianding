@@ -1,16 +1,13 @@
 package com.lingyun_chain.zihua.activity;
 
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
-import com.lingyun_chain.zihua.util.ToasUtils;
 import com.lingyun_chain.zihua.util.UiUtils;
 
 /**

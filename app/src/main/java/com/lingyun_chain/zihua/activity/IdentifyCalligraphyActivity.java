@@ -2,22 +2,13 @@ package com.lingyun_chain.zihua.activity;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.v4.content.FileProvider;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -29,8 +20,6 @@ import com.lingyun_chain.zihua.base.BaseAsyTask;
 import com.lingyun_chain.zihua.constants.IntentConstants;
 import com.lingyun_chain.zihua.interfaceMy.PermissionListener;
 import com.lingyun_chain.zihua.util.FileProvider7Util;
-import com.lingyun_chain.zihua.util.FileUtil;
-import com.lingyun_chain.zihua.util.MD5Util;
 import com.lingyun_chain.zihua.util.OSutil;
 import com.lingyun_chain.zihua.util.UiUtils;
 
@@ -43,8 +32,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-
-import id.zelory.compressor.Compressor;
 
 /**
  * 实现字画鉴定功能
@@ -121,7 +108,8 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (!TextUtils.equals(sealKeyValue, "default")
                     && !TextUtils.equals(sealDecribal, "default")
                     && !TextUtils.equals(picPath, "default")) {
-                new AsyRetrieveFeatureTask(IdentifyCalligraphyActivity.this, "AsyRetrieveFeatureTask", sealKeyValue).execute();
+
+              new AsyHashTask(IdentifyCalligraphyActivity.this,"",sealKeyValue).execute();
             } else {
                 UiUtils.show("请补充完整所有信息！！");
             }
@@ -147,9 +135,8 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {
                 //picPath = FileUtil.getPath() + "identifyPhoto" + "/seal.jpg";
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
-                    UiUtils.show("拍照成功");
-                    identify_seal_text.setEnabled(false);
-                    identify_seal_text.setText("印章已上传");
+                    new AsyRetrieveFeatureTask(IdentifyCalligraphyActivity.this, "AsyRetrieveFeatureTask", picPath).execute();
+
                     //                    File fileTemp = new File(picPath);
 //                    File file;
 //                    try {
@@ -205,8 +192,11 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
             } else if (TextUtils.equals(s, "200")) {
-                UiUtils.show("字画键值已成功识别");
-                new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();
+                UiUtils.show("拍照成功");
+                identify_seal_text.setEnabled(false);
+                identify_seal_text.setText("印章已上传");
+
+                //new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();
             }
         }
 

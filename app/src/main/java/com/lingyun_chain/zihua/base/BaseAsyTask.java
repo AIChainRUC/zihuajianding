@@ -2,9 +2,7 @@ package com.lingyun_chain.zihua.base;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
-import android.text.TextUtils;
 import android.util.Log;
 
 import com.lingyun_chain.zihua.constants.URLConstants;
@@ -66,7 +64,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     private String assetId;
     private String generateCertificate;
     private String jsondata;
-    private String assetID;
+    private String fileName;
 
     public BaseAsyTask() {
 
@@ -101,8 +99,8 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 break;
             case "StoreCalligraphy":
                 jsondata = params[0];
-                generateFace = params[1];
-                assetID = params[2];
+//                generateFace = params[1];
+//                assetID = params[2];
 //                desc = params[0];
 //                authorPUBKEY = params[1];
 //                delcare = params[2];
@@ -150,6 +148,16 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 dialogInfo = "加载中，请稍候...";
                 builder.add("cert", generateCertificate);
                 break;
+            case "AsyUploadImageTask":
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.UploadPicture;
+                generateFace = params[0];
+                fileName = params[1];
+                break;
+            case "AsyFaceVerTask":
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
+                generateFace = params[0];
+                generateCertificate=params[1];
+                break;
             default:
                 break;
         }
@@ -178,6 +186,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                Log.d("hjsfile",file.getAbsolutePath());
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
@@ -191,8 +200,8 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                LogUtils.d("file", generateFace);
-                LogUtils.d("file.name", file.getName());
+                //LogUtils.d("file", generateFace);
+                //LogUtils.d("file.name", file.getName());
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
@@ -228,6 +237,14 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
             case "StoreCalligraphy"://字画存链
+                fileBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+//                        .addFormDataPart("img", assetID, RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("DATA", "null", RequestBody.create(MEDIA_TYPE_JSON, jsondata))
+                        .build();
+                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+                break;
+            case "AsyUploadImageTask":
                 try {
                     fileTemp = new File(generateFace);
                     file = new Compressor(context).compressToFile(fileTemp);
@@ -236,8 +253,17 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 }
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("img", assetID, RequestBody.create(MEDIA_TYPE_JPG, file))
-                        .addFormDataPart("DATA", "null", RequestBody.create(MEDIA_TYPE_JSON, jsondata))
+                        .addFormDataPart("img", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
+                        .addFormDataPart("name", fileName)
+                        .build();
+                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+                break;
+            case "AsyFaceVerTask":
+                fileTemp = new File(generateFace);
+                fileBody = new MultipartBody.Builder()
+                        .setType(MultipartBody.FORM)
+                        .addFormDataPart("img", fileTemp.getName(), RequestBody.create(MEDIA_TYPE_JPG, fileTemp))
+                        .addFormDataPart("feature",generateCertificate)
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
