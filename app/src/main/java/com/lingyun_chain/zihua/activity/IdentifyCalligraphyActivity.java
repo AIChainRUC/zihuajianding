@@ -1,6 +1,7 @@
 package com.lingyun_chain.zihua.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -108,8 +109,8 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (!TextUtils.equals(sealKeyValue, "default")
                     && !TextUtils.equals(sealDecribal, "default")
                     && !TextUtils.equals(picPath, "default")) {
+                new AsyRetrieveFeatureTask(IdentifyCalligraphyActivity.this, "AsyRetrieveFeatureTask", sealKeyValue).execute();
 
-              new AsyHashTask(IdentifyCalligraphyActivity.this,"",sealKeyValue).execute();
             } else {
                 UiUtils.show("请补充完整所有信息！！");
             }
@@ -128,6 +129,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
         }
     }
 
+    @SuppressLint("ResourceAsColor")
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -135,7 +137,12 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {
                 //picPath = FileUtil.getPath() + "identifyPhoto" + "/seal.jpg";
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
-                    new AsyRetrieveFeatureTask(IdentifyCalligraphyActivity.this, "AsyRetrieveFeatureTask", picPath).execute();
+                    UiUtils.show("印章已拍摄");
+                    identify_seal_text.setText("印章已拍摄");
+                    identify_seal_text.setEnabled(false);
+                    identify_seal_text.setTextColor(R.color.colorAccent);
+                    //new AsySaveTask(this, "StoreCalligSave", picPath).execute();
+                    // new AsyRetrieveFeatureTask(IdentifyCalligraphyActivity.this, "AsyRetrieveFeatureTask", picPath).execute();
 
                     //                    File fileTemp = new File(picPath);
 //                    File file;
@@ -155,6 +162,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
         }
     }
 
+
     //打开相机拍照
     private void takePictures(int TAG) {
         //执行拍照前，应该先判断SD卡是否存在
@@ -170,7 +178,9 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                 if (temp.exists())
                     temp.delete();
                 photoUri = FileProvider7Util.getUriForFile(this, temp);
-                picPath = temp.getAbsolutePath();
+                if (TAG == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {
+                    picPath = temp.getAbsolutePath();//印章才需要保存
+                }
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);//将拍取的照片保存到指定URI
                 startActivityForResult(intent, TAG);
             }
@@ -192,11 +202,10 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
             } else if (TextUtils.equals(s, "200")) {
-                UiUtils.show("拍照成功");
-                identify_seal_text.setEnabled(false);
-                identify_seal_text.setText("印章已上传");
-
+                new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, sealKeyValue).execute();
                 //new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();
+            } else {
+                UiUtils.show("字画键值输入有误");
             }
         }
 

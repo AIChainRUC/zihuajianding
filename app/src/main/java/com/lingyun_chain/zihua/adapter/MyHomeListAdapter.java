@@ -19,7 +19,7 @@ public class MyHomeListAdapter extends BaseAdapter{
     }
     @Override
     public int getCount() {
-        return 4;
+        return 3;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class MyHomeListAdapter extends BaseAdapter{
                 holder.tv_name.setText("证书生成");
                 break;
             default:
-                holder.tv_name.setText("证书使用");
+                //holder.tv_name.setText("证书使用");
                 break;
         }
         return convertView;

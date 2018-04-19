@@ -134,7 +134,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 generateFace = params[0];//图片的内容
                 featureSeal = params[1];
                 //builder.add("im1", generateFace);
-                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
+                URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.HashURL;
                 dialogInfo = "字画鉴定中，请稍候...";
                 break;
             case "AsyCheckFaceTask"://活体验证

@@ -19,4 +19,5 @@ public class URLConstants {
     public static final String FaceIdenURL = "/faceIden";//短视频验证
     public static final String RetrieveUserFeature = "/channels/mychannel/chaincodes/urcc/retrieveUserFeature";//证书使用，查找链上人脸特征
     public static final String UploadPicture = "/upload";
+    public static final String HashURL = "/hash";
 }
