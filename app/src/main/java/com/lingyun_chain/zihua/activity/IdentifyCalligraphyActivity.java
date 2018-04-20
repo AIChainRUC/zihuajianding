@@ -159,6 +159,8 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                 //错误提示
                 UiUtils.show("拍照失败");
             }
+        }else {
+            UiUtils.show("拍照失败");
         }
     }
 

@@ -298,12 +298,9 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             } else if (requestCode == IntentConstants.GO_TO_KEY) {
                 store_text_key.setText("密钥文件已上传");
                 store_text_key.setEnabled(false);
-//            } else if (requestCode == IGO_TO_FACE) {
-//                //isFaceVer = true;
-//            } else {
-                //错误提示
-                UiUtils.show("拍照失败");
             }
+        }else {
+            UiUtils.show("拍照失败");
         }
     }
 
