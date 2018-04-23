@@ -188,7 +188,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         HomeCarousel homeCarousel;
         homeCarousel = new HomeCarousel(R.mipmap.logo, "www.baidu.com");
         picDatas.add(homeCarousel);
-        picDatas.add(new HomeCarousel(R.mipmap.ic_launcher, "www.baidu.com"));
+        // picDatas.add(new HomeCarousel(R.mipmap.ic_launcher, "www.baidu.com"));
         initIndicator();
 //        homeCarousel.setImageView(R.mipmap.background);
 //        homeCarousel.setLink("www.baidu.com");
