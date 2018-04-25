@@ -68,7 +68,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     private String subjectWork = null;
     private String desc = "default";//书画基本信息
     private String delcare = "default";//制式声明
-    private String featureSeal = "default1";//印章的特征值
+    private String featureSeal = null;//印章的特征值
     private String picHash = "default";//画全图的哈希值
     private String sig_r = "default"; //ecbsa签名_r
     private String sig_s = "default";//ecbsa签名_s
@@ -157,7 +157,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                         && !classificationWork.isEmpty()
                         && !materialWork.isEmpty()
                         && !subjectWork.isEmpty()
-                        && !TextUtils.equals(featureSeal, "default")
+                        && !featureSeal.isEmpty()
                         && !TextUtils.equals(picHash, "default")) {
                     //desc = store_workName + " " + store_workSize + " " + " " + creationYear + " " + classificationWork + " " + materialWork + " " + subjectWork;
                     desc = StringUtil.stringDescToJson(store_workName, store_workSize, creationYear, classificationWork, materialWork, subjectWork);//书画基本信息转化为json格式
