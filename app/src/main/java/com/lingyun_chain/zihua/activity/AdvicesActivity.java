@@ -13,11 +13,13 @@ import com.lingyun_chain.zihua.util.UiUtils;
 /**
  * AdvicesActivity实现用户反馈的功能
  */
-public class AdvicesActivity extends BaseActivity implements View.OnClickListener{
+public class AdvicesActivity extends BaseActivity implements View.OnClickListener {
     //Toolbar相关
     private Toolbar toolbar;
+    //用户提交建议和联系方式
     private EditText edit_advice, edit_contact;
     private Button btn_submit;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -26,6 +28,9 @@ public class AdvicesActivity extends BaseActivity implements View.OnClickListene
         initView();
     }
 
+    /**
+     * 初始化view
+     */
     private void initView() {
         edit_advice = (EditText) findViewById(R.id.edit_advice);
         edit_contact = (EditText) findViewById(R.id.edit_contact);

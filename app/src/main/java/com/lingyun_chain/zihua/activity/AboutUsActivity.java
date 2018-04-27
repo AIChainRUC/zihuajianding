@@ -7,17 +7,20 @@ import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 
 /**
- * AboutUs实现的关于我们的功能
+ * AboutUs实现的关于我们的功能,介绍公司
  */
-public class AboutUsActivity extends BaseActivity {
+public class
+AboutUsActivity extends BaseActivity {
     //Toolbar相关
     private Toolbar toolbar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_about_us);
         initToolbar();
     }
+
     //初始化导航栏
     private void initToolbar() {
         toolbar = (Toolbar) findViewById(R.id.toolbar_aboutUs);

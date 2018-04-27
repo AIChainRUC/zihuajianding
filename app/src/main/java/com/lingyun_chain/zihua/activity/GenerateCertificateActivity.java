@@ -55,32 +55,35 @@ import id.zelory.compressor.Compressor;
 public class GenerateCertificateActivity extends BaseActivity implements View.OnClickListener {
     //Toolbar相关
     private Toolbar toolbar;
-    private EditText generate_name_edt;
-    private Spinner generate_gender_spinner;
-    private EditText generate_date_edt;
-    private String generate_gender_string;
+    private EditText generate_name_edt;//姓名
     private String generate_name_string;
+
+    private Spinner generate_gender_spinner;//性别
+    private String generate_gender_string;
+
+    private EditText generate_date_edt;//出生日期
     private String generate_date_string;
-    private Button generate_submit_btn;
-    private Button generate_camera;
-    //private ImageView generate_ima;
-    private TextView generate_text;
-    private String picContent;//图片转为字符数组后的内容
+
+    private Button generate_submit_btn;//生成证书
+    private Button generate_camera;//拍摄人脸照片
+
+    private TextView generate_text;//人脸照片上传成功后，对用户的提示
 
     private String generateFaceFeature;//人脸特征
     private String generatePublicKey = null;//公钥
-    private String generatePrivateKey = null;//公钥
+    private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书
-    private Bitmap bitmap;
-    private Uri photoUri;
+    private Uri photoUri;//拍摄照片的URI
 
+    //private String picContent;//图片转为字符数组后的内容
+    //private ImageView generate_ima;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_generate_certificate);
         initToolbar();
         initView();
-        //注册服务
+        //用于检测当前网络是否可用
         if (mReceiver != null && mFilter != null) {
             registerReceiver(mReceiver, mFilter);
         } else {
@@ -91,6 +94,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         }
     }
 
+    //取消广播
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -102,14 +106,15 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         }
     }
 
+    //初始化view
     private void initView() {
         generate_name_edt = (EditText) findViewById(R.id.generate_name_edt);
-        generate_gender_spinner = (Spinner) findViewById(R.id.generate_gender_spinner);
+
+        generate_gender_spinner = (Spinner) findViewById(R.id.generate_gender_spinner);//选择性别
         generate_gender_spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 generate_gender_string = generate_gender_spinner.getItemAtPosition(position).toString();
-                //UiUtils.show(generate_gender_string);
             }
 
             @Override
@@ -117,13 +122,14 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 generate_gender_string = "男";
             }
         });
+
         generate_date_edt = (EditText) findViewById(R.id.generate_date_edt);
         generate_submit_btn = (Button) findViewById(R.id.generate_submit_btn);
         generate_submit_btn.setOnClickListener(this);
         generate_camera = (Button) findViewById(R.id.generate_camera);
         generate_camera.setOnClickListener(this);
-        //generate_ima = (ImageView) findViewById(R.id.generate_ima);
         generate_text = (TextView) findViewById(R.id.generate_text);
+        //generate_ima = (ImageView) findViewById(R.id.generate_ima);
     }
 
     private void initToolbar() {
@@ -136,10 +142,9 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.generate_submit_btn) {
+        if (v.getId() == R.id.generate_submit_btn) {//生成证书
             generate_name_string = generate_name_edt.getText().toString().trim();//获取姓名
-            generate_date_string = generate_date_edt.getText().toString();
-            //Log.d("hjs",generate_date_string);
+            generate_date_string = generate_date_edt.getText().toString();//获取日期
             if (ButtonUtil.isFastDoubleClick()) {
                 UiUtils.show("您点击过快，请稍候再试");
             } else {
@@ -467,12 +472,12 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 editor.putString("generatePrivateKey", generatePrivateKey);
                 editor.putString("generateCertificate", generateCertificate);
                 editor.apply();
-                Intent intent=new Intent();
-                intent.putExtra("generatePublicKey",generatePublicKey);
-                intent.putExtra("generatePrivateKey",generatePrivateKey);
-                intent.putExtra("generateCertificate",generateCertificate);
-                intent.putExtra("generateFaceFeature",generateFaceFeature);
-                setResult(RESULT_OK,intent);
+                Intent intent = new Intent();
+                intent.putExtra("generatePublicKey", generatePublicKey);
+                intent.putExtra("generatePrivateKey", generatePrivateKey);
+                intent.putExtra("generateCertificate", generateCertificate);
+                intent.putExtra("generateFaceFeature", generateFaceFeature);
+                setResult(RESULT_OK, intent);
                 finish();
             } else if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");

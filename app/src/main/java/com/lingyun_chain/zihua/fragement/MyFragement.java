@@ -102,13 +102,13 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
                     public void onClick(DialogInterface dialog, int which) {
                         File file;
                         if (isSdExist) {
-                            file = new File(getActivity().getExternalCacheDir() + "/Lingyun_chain");
+                            file = new File(FileUtil.getPath());
                         } else {
                             file = new File(FileUtil.Cache);
                         }
                         FileUtil.RecursionDeleteFile(file);//递归删除文件
                         if (isSdExist) {
-                            fizeSize = FileUtil.getAutoFileOrFilesSize(getActivity().getExternalCacheDir() + "/Lingyun_chain");
+                            fizeSize = FileUtil.getAutoFileOrFilesSize(FileUtil.getPath());
                         } else {
                             fizeSize = FileUtil.getAutoFileOrFilesSize(FileUtil.Cache);
                         }

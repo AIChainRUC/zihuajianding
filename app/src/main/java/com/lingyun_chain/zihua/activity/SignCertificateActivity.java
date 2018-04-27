@@ -23,6 +23,7 @@ import com.cjt2325.cameralibrary.listener.JCameraListener;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
+import com.lingyun_chain.zihua.util.FileUtil;
 import com.lingyun_chain.zihua.util.UiUtils;
 
 import org.json.JSONException;
@@ -66,7 +67,7 @@ public class SignCertificateActivity extends BaseActivity {
         if (sharedPreference != null) {
             generateCertificate = sharedPreference.getString("generateCertificate", "default");
         }
-        //jCameraView.setSaveVideoPath(Environment.getExternalStorageDirectory().getPath() + File.separator + "JCamera");
+        jCameraView.setSaveVideoPath(FileUtil.getPath());
         jCameraView.setFeatures(JCameraView.BUTTON_STATE_ONLY_RECORDER);
         getPermissions();
         jCameraView.setJCameraLisenter(new JCameraListener() {

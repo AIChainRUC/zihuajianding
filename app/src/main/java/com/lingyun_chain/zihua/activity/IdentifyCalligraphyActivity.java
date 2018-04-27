@@ -159,7 +159,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                 //错误提示
                 UiUtils.show("拍照失败");
             }
-        }else {
+        } else {
             UiUtils.show("拍照失败");
         }
     }
@@ -204,7 +204,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
             } else if (TextUtils.equals(s, "200")) {
-                new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, sealKeyValue).execute();
+                new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();
                 //new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();
             } else {
                 UiUtils.show("字画键值输入有误");
@@ -262,8 +262,6 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                 string = response.body().string();
                 jsonObject = new JSONObject(string);
                 status = jsonObject.optString("code");
-                //LogUtils.d("status", status);
-                //LogUtils.d("status", generateFaceFeature);
             } catch (IOException e) {
                 e.printStackTrace();
                 //LogUtils.d("hjs",e.toString());

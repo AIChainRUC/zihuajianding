@@ -45,6 +45,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
     protected JSONObject jsonObject;
     protected final MediaType MEDIA_TYPE_JPG = MediaType.parse("image/jpeg");
     protected final MediaType MEDIA_TYPE_JSON = MediaType.parse("application/json; charset=utf-8");
+    protected final MediaType MEDIA_TYPE_VIDEO = MediaType.parse("video/mp4");
     //人脸
     private String generateFace;
     private String faceFeature;
@@ -153,10 +154,11 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 generateFace = params[0];
                 fileName = params[1];
                 break;
-            case "AsyFaceVerTask":
+            case "AsyFaceVerTask"://活体验证
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
                 generateFace = params[0];
-                generateCertificate=params[1];
+                generateCertificate = params[1];
+                dialogInfo="视频验证中，请稍候...";
                 break;
             default:
                 break;
@@ -186,7 +188,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.d("hjsfile",file.getAbsolutePath());
+                Log.d("hjsfile", file.getAbsolutePath());
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))
@@ -262,8 +264,9 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 fileTemp = new File(generateFace);
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
-                        .addFormDataPart("img", fileTemp.getName(), RequestBody.create(MEDIA_TYPE_JPG, fileTemp))
-                        .addFormDataPart("feature",generateCertificate)
+                        .addFormDataPart("video", fileTemp.getName(), RequestBody.create(MEDIA_TYPE_VIDEO, fileTemp))
+                        .addFormDataPart("videoName",fileTemp.getName())
+                        .addFormDataPart("feature", generateCertificate)
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
