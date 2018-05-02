@@ -43,6 +43,7 @@ public class SignCertificateActivity extends BaseActivity {
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书
+    private String generateFaceFeature = null;//人脸特征
     //private TextView sign_certi_text;
     private String featureFace = "1111111";
     private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
@@ -66,6 +67,7 @@ public class SignCertificateActivity extends BaseActivity {
         jCameraView = (JCameraView) findViewById(R.id.videoFace);
         if (sharedPreference != null) {
             generateCertificate = sharedPreference.getString("generateCertificate", "default");
+            generateFaceFeature = sharedPreference.getString("generateFaceFeature", "default");
         }
         jCameraView.setSaveVideoPath(FileUtil.getPath());
         jCameraView.setFeatures(JCameraView.BUTTON_STATE_ONLY_RECORDER);
@@ -79,7 +81,7 @@ public class SignCertificateActivity extends BaseActivity {
 
             @Override
             public void recordSuccess(String videoUrl, Bitmap firstFrame) {
-                new AsyFaceVerTask(SignCertificateActivity.this, "AsyFaceVerTask", videoUrl, generateCertificate).execute();
+                new AsyFaceVerTask(SignCertificateActivity.this, "AsyFaceVerTask", videoUrl, generateFaceFeature).execute();
 //                Intent intent = new Intent();
 //                intent.putExtra("videoPath", videoUrl);
 //                setResult(RESULT_OK, intent);

@@ -164,6 +164,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     assetID = SHAUtil.getSHA256StrJava(desc + generatePublicKey + delcare + featureSeal + picHash);//资产唯一的键值,留给用户看的
                     String signAsset = ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
                     String jsonData = StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json//stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
+                    LogUtils.d("jsonData", jsonData);
                     new AsyCreateAsset(StoreCalligraphyActivity.this,
                             "StoreCalligraphy", jsonData).execute();
 //                    if (isFaceVer == true) {
@@ -299,7 +300,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 store_text_key.setText("密钥文件已上传");
                 store_text_key.setEnabled(false);
             }
-        }else {
+        } else {
             UiUtils.show("拍照失败");
         }
     }
@@ -404,7 +405,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             super.onPostExecute(s);
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络有问题，请稍候再试");
-            } else if(TextUtils.equals(s, "200")){
+            } else if (TextUtils.equals(s, "200")) {
                 UiUtils.show("恭喜您，存链成功");
                 editor.putString("assetID", assetID);
                 editor.apply();
@@ -412,7 +413,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                 store_assetId.setVisibility(View.VISIBLE);
                 assetId_help.setVisibility(View.VISIBLE);
                 storeSubmit_btn.setVisibility(View.GONE);
-            }else {
+            } else {
                 UiUtils.show("存链失败，请重试");
             }
         }
@@ -422,7 +423,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             try {
                 if (okHttpClient != null) {
                     response = okHttpClient.newCall(request).execute();
-                    LogUtils.d("response",response.toString());
+                    LogUtils.d("response", response.toString());
                     string = response.body().string();
                     jsonObject = new JSONObject(string);
                     status = jsonObject.optString("code");

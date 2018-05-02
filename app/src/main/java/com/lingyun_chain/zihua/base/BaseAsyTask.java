@@ -86,7 +86,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.FaceURL;
                 dialogInfo = "人脸识别中，请稍候...";
                 break;
-            case "CreateCertificate":
+            case "AsyCreateCertificateTask":
                 faceFeature = params[0];
                 userName = params[1];
                 userDate = params[2];
@@ -94,9 +94,10 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.CreateCertificateURL;
                 dialogInfo = "数字证书生成中，请稍候...";
                 desc = userName + " " + userGender + " " + " " + userDate;
-                //LogUtils.d("hjs",desc);
+                builder = new FormBody.Builder();
                 builder.add("feature", faceFeature);
                 builder.add("desc", desc);
+                builder.add("name", userName);
                 break;
             case "StoreCalligraphy":
                 jsondata = params[0];
@@ -110,6 +111,8 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
 //                sig_r = params[5];
 //                sig_s = params[6];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.CreateAssetURL;
+                builder = new FormBody.Builder();
+                builder.add("DATA", jsondata);
                 dialogInfo = "字画存链中，请稍候...";
 //                builder.add("desc", desc);
 //                builder.add("authorPUBKEY", authorPUBKEY);
@@ -129,6 +132,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 assetId = params[0];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.RetrieveFeatureURL;
                 dialogInfo = "字画键值识别中，请稍候...";
+                builder = new FormBody.Builder();
                 builder.add("assetID", assetId);
                 break;
             case "AsyHashTask":
@@ -147,6 +151,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 generateCertificate = params[0];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.RetrieveUserFeature;
                 dialogInfo = "加载中，请稍候...";
+                builder = new FormBody.Builder();
                 builder.add("cert", generateCertificate);
                 break;
             case "AsyUploadImageTask":
@@ -158,7 +163,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 URL = URLConstants.ServerURL + URLConstants.AIPort + URLConstants.CheckURL;
                 generateFace = params[0];
                 generateCertificate = params[1];
-                dialogInfo="视频验证中，请稍候...";
+                dialogInfo = "视频验证中，请稍候...";
                 break;
             default:
                 break;
@@ -238,14 +243,14 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
-            case "StoreCalligraphy"://字画存链
-                fileBody = new MultipartBody.Builder()
-                        .setType(MultipartBody.FORM)
-//                        .addFormDataPart("img", assetID, RequestBody.create(MEDIA_TYPE_JPG, file))
-                        .addFormDataPart("DATA", "null", RequestBody.create(MEDIA_TYPE_JSON, jsondata))
-                        .build();
-                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
-                break;
+//            case "StoreCalligraphy"://字画存链
+//                fileBody = new MultipartBody.Builder()
+//                        .setType(MultipartBody.FORM)
+////                        .addFormDataPart("img", assetID, RequestBody.create(MEDIA_TYPE_JPG, file))
+//                        .addFormDataPart("DATA", "null", RequestBody.create(MEDIA_TYPE_JSON, jsondata))
+//                        .build();
+//                request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
+//                break;
             case "AsyUploadImageTask":
                 try {
                     fileTemp = new File(generateFace);
@@ -265,14 +270,15 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("video", fileTemp.getName(), RequestBody.create(MEDIA_TYPE_VIDEO, fileTemp))
-                        .addFormDataPart("videoName",fileTemp.getName())
+                        .addFormDataPart("videoName", fileTemp.getName())
                         .addFormDataPart("feature", generateCertificate)
                         .build();
                 request = new Request.Builder().url(URL).post(fileBody).addHeader("Connection", "close").build();
                 break;
-            case "CreateCertificate"://证书生成
+            case "AsyCreateCertificateTask"://证书生成
             case "AsyRetrieveFeatureTask"://获取链上字画印章特征
             case "AsyUserFeatureTask"://活体验证中，查找链上的人脸特征
+            case "StoreCalligraphy":
                 request = new Request.Builder()
                         .url(URL)
                         .post(builder.build())

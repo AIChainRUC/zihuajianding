@@ -44,7 +44,7 @@ public class StringUtil {
             jsonObject.put("classificationWork", classificationWork);
             jsonObject.put("materialWork", materialWork);
             jsonObject.put("subjectWork", subjectWork);
-            LogUtils.d("logJson",jsonObject.toString());
+            //LogUtils.d("logJson",jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -64,7 +64,7 @@ public class StringUtil {
             jsonObject.put("feature", featureSeal);
             jsonObject.put("picHash", picHash);
             jsonObject.put("sig", signAsset);
-            LogUtils.d("logJson",jsonObject.toString());
+            //LogUtils.d("logJson",jsonObject.toString());
         } catch (JSONException e) {
             e.printStackTrace();
         }

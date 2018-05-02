@@ -46,8 +46,11 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 import id.zelory.compressor.Compressor;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
 
 /**
  * GenerateCertificateActivity 实现生成证书的功能
@@ -114,12 +117,13 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         generate_gender_spinner.setOnItemSelectedListener(new Spinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                generate_gender_string = generate_gender_spinner.getItemAtPosition(position).toString();
+                //generate_gender_string = generate_gender_spinner.getItemAtPosition(position).toString();
+                generate_gender_string = "male";
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                generate_gender_string = "男";
+                generate_gender_string = "female";
             }
         });
 
@@ -157,9 +161,9 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                     } else {
                         if (TextUtils.isEmpty(generateFaceFeature)) {
                             UiUtils.show("请先上传人脸照片");
-                        } else {
-                            new AsyCreateCertificate(GenerateCertificateActivity.this,
-                                    "CreateCertificate",
+                        } else {//生成证书,传入人脸特征值，姓名，出生年月，性别
+                            new AsyCreateCertificateTask(GenerateCertificateActivity.this,
+                                    "AsyCreateCertificateTask",
                                     generateFaceFeature,
                                     generate_name_string,
                                     generate_date_string,
@@ -168,11 +172,11 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                     }
                 }
             }
-        } else if (v.getId() == R.id.generate_camera) {//拍照上传
+        } else if (v.getId() == R.id.generate_camera) {//拍照上传，获取人脸特征值
             BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                 @Override
-                public void onGranted() {
-                    UiUtils.hideInput(GenerateCertificateActivity.this, generate_date_edt);
+                public void onGranted() {//获取动态权限
+                    UiUtils.hideInput(GenerateCertificateActivity.this, generate_date_edt);//隐藏键盘
                     takePictures();//打开相机拍照
                 }
 
@@ -456,10 +460,10 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         }
     }
 
-    public class AsyCreateCertificate extends BaseAsyTask {
+    public class AsyCreateCertificateTask extends BaseAsyTask {
         private String status = "-1";
 
-        public AsyCreateCertificate(Context context, String string, String... params) {
+        public AsyCreateCertificateTask(Context context, String string, String... params) {
             super(context, string, params);
         }
 
@@ -497,6 +501,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
                 if (okHttpClient != null) {
                     response = okHttpClient.newCall(request).execute();
                 }
+                response = okHttpClient.newCall(request).execute();
                 string = response.body().string();
                 jsonObject = new JSONObject(string);
                 status = jsonObject.optString("code");
@@ -508,6 +513,8 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            okHttpClient.dispatcher().cancelAll();
+            okHttpClient.connectionPool().evictAll();
             return status;
         }
     }
