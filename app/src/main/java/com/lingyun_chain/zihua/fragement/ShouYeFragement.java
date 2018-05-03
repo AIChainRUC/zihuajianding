@@ -82,7 +82,7 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
             generatePublicKey = sharedPreference.getString("generatePublicKey", "default");
             generatePrivateKey = sharedPreference.getString("generatePrivateKey", "default");
             generateCertificate = sharedPreference.getString("generateCertificate", "default");
-            generateFaceFeature = sharedPreference.getString("generateCertificate", "default");
+            generateFaceFeature = sharedPreference.getString("generateFaceFeature", "default");
         }
         initListView();
         if (picDatas == null) {
@@ -207,8 +207,8 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         switch (position) {
             case 0:
                 if (!TextUtils.equals(generatePublicKey, "default") && !TextUtils.equals(generatePrivateKey, "default")) {
-                    //startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));
-                    new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+                    startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));
+                    //new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
 //                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 //                    builder.setTitle("温馨提示");
 //                    builder.setMessage("为了保证您的安全，我们建议您拍摄含眨眼动作的短视频进行人脸识别");

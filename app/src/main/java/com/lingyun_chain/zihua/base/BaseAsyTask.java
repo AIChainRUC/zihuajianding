@@ -193,7 +193,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                Log.d("hjsfile", file.getAbsolutePath());
+                //Log.d("hjsfile", file.getAbsolutePath());
                 fileBody = new MultipartBody.Builder()
                         .setType(MultipartBody.FORM)
                         .addFormDataPart("im1", file.getName(), RequestBody.create(MEDIA_TYPE_JPG, file))

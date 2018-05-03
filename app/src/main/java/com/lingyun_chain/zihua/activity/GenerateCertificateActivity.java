@@ -72,7 +72,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 
     private TextView generate_text;//人脸照片上传成功后，对用户的提示
 
-    private String generateFaceFeature;//人脸特征
+    private String generateFaceFeature="123456";//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书

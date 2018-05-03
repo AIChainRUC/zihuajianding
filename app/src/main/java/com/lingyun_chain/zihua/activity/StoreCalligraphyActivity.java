@@ -68,7 +68,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     private String subjectWork = null;
     private String desc = "default";//书画基本信息
     private String delcare = "default";//制式声明
-    private String featureSeal = null;//印章的特征值
+    private String featureSeal = "123456";//印章的特征值
     private String picHash = "default";//画全图的哈希值
     private String sig_r = "default"; //ecbsa签名_r
     private String sig_s = "default";//ecbsa签名_s
@@ -162,9 +162,8 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     //desc = store_workName + " " + store_workSize + " " + " " + creationYear + " " + classificationWork + " " + materialWork + " " + subjectWork;
                     desc = StringUtil.stringDescToJson(store_workName, store_workSize, creationYear, classificationWork, materialWork, subjectWork);//书画基本信息转化为json格式
                     assetID = SHAUtil.getSHA256StrJava(desc + generatePublicKey + delcare + featureSeal + picHash);//资产唯一的键值,留给用户看的
-                    String signAsset = ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
+                    String signAsset = ECDSAUtil.sign(generatePrivateKey,assetID);//对资产ID进行签名
                     String jsonData = StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json//stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
-                    LogUtils.d("jsonData", jsonData);
                     new AsyCreateAsset(StoreCalligraphyActivity.this,
                             "StoreCalligraphy", jsonData).execute();
 //                    if (isFaceVer == true) {
@@ -353,7 +352,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    public class AsyCreateAsset extends BaseAsyTask {//上传图片
+    public class AsyCreateAsset extends BaseAsyTask {
         private String status = "-1";
 
 
