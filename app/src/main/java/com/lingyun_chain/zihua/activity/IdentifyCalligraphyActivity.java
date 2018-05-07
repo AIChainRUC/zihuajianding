@@ -40,17 +40,23 @@ import java.util.Locale;
 public class IdentifyCalligraphyActivity extends BaseActivity implements View.OnClickListener {
     //Toolbar相关
     private Toolbar toolbar;
-    private TextView identify_seal_text;
-    private TextView identify_image_text;
-    private EditText identify_seal_keyValue;
-    private EditText identify_seal_decribal;
-    private Button identify_seal_btn;
-    private Boolean isHaveSeal = false;
+
+    private TextView identify_seal_text;//印章值
+    private String generateSealFeature;
+
+    private TextView identify_image_text;//图片
+    protected String picPath = "default";
+
+    private EditText identify_seal_keyValue;//字画键值
     private String sealKeyValue = "default";
+
+    private EditText identify_seal_decribal;//字画描述
     private String sealDecribal = "default";
 
-    private String generateSealFeature;
-    protected String picPath = "default";
+    private Button identify_seal_btn;
+
+    private Boolean isHaveSeal = false;//印章是否上传
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,7 +93,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
 
     @Override
     public void onClick(View v) {
-        if (v.getId() == R.id.identify_seal_text) {
+        if (v.getId() == R.id.identify_seal_text) {//上传印章
             if (isHaveSeal) {
                 UiUtils.show("已上传，请不要重复提交");
             } else {
@@ -103,7 +109,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                     }
                 });
             }
-        } else if (v.getId() == R.id.identify_seal_btn) {
+        } else if (v.getId() == R.id.identify_seal_btn) {//字画鉴定
             sealKeyValue = identify_seal_keyValue.getText().toString().trim();
             sealDecribal = identify_seal_decribal.getText().toString().trim();
             if (!TextUtils.equals(sealKeyValue, "default")
@@ -114,7 +120,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             } else {
                 UiUtils.show("请补充完整所有信息！！");
             }
-        } else if (v.getId() == R.id.identify_image_text) {
+        } else if (v.getId() == R.id.identify_image_text) {//上传字画图片
             BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                 @Override
                 public void onGranted() {
@@ -134,7 +140,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {
+            if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {//印章
                 //picPath = FileUtil.getPath() + "identifyPhoto" + "/seal.jpg";
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     UiUtils.show("印章已拍摄");
@@ -152,7 +158,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
 //                        e.printStackTrace();
 //                    }
                 }
-            } else if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE) {
+            } else if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE) {//图片
                 identify_image_text.setText("图片已拍摄");
                 identify_image_text.setEnabled(false);
             } else {
@@ -191,7 +197,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
         }
     }
 
-    public class AsyRetrieveFeatureTask extends BaseAsyTask {
+    public class AsyRetrieveFeatureTask extends BaseAsyTask {//根据键值获取字画特征值
         private String status = "-1";
 
         public AsyRetrieveFeatureTask(Context context, String string, String... params) {
@@ -204,7 +210,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
             } else if (TextUtils.equals(s, "200")) {
-                new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();
+                new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();//字画鉴定
                 //new AsyHashTask(IdentifyCalligraphyActivity.this, "AsyHashTask", picPath, generateSealFeature).execute();
             } else {
                 UiUtils.show("字画键值输入有误");
@@ -231,7 +237,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
         }
     }
 
-    public class AsyHashTask extends BaseAsyTask {
+    public class AsyHashTask extends BaseAsyTask {//字画鉴定
         private String status = "-1";
 
         public AsyHashTask(Context context, String string, String... params) {

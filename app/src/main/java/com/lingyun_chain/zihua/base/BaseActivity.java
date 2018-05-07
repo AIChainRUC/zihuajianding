@@ -40,31 +40,40 @@ import okhttp3.OkHttpClient;
  * Activity的统一管理
  */
 public class BaseActivity extends AppCompatActivity {
-    public ActionBar actionBar;
+    public ActionBar actionBar;//标题栏
+
     //权限监听回调器
     private static PermissionListener mPermissionListener;
-    protected NetWorkChangerReceiver mReceiver;
-    protected OkHttpClient mOkHttpClient;
+
+    protected NetWorkChangerReceiver mReceiver;//监听网络的变化
+
+    protected OkHttpClient mOkHttpClient;//用于上传图片等
+
     protected IntentFilter mFilter;
-    protected SharedPreferences sharedPreference;
+
+    protected SharedPreferences sharedPreference;//存储数据到本地
     protected SharedPreferences.Editor editor;
-    private static final int PERMISSIONS_FOR_TAKE_PHOTO = 10;
+
     //图片对应Uri
     protected Uri photoUri;
     //图片文件路径
     protected String picPath;
     // 存储文件
     protected File mVecordFile;
+
     protected Camera mCamera;
     protected MediaRecorder mediaRecorder;
-    protected String currentVideoFilePath;
+
+    protected String currentVideoFilePath;//视频的路径
+
     protected String saveVideoPath = "";
+
     protected Chronometer mRecordTime;
     protected long mPauseTime = 0;           //录制暂停时间间隔
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle("");
+        setTitle("");//实例化
         mOkHttpClient = new OkHttpClient();
         mReceiver = new NetWorkChangerReceiver();
         mFilter = new IntentFilter();
@@ -82,6 +91,7 @@ public class BaseActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //动态获取权限所需
     public void dialog(final Activity activity, String info) {
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("提示");
@@ -111,42 +121,42 @@ public class BaseActivity extends AppCompatActivity {
         super.onDestroy();
         ActivityCollector.removeActivity(this);
     }
-    /**
-     * 释放摄像头资源
-     *
-     * @author liuzhongjun
-     * @date 2016-2-5
-     */
-    protected void stopCamera() {
-        if (mCamera != null) {
-            mCamera.setPreviewCallback(null);
-            mCamera.stopPreview();
-            mCamera.release();
-            mCamera = null;
-        }
-    }
-    /**
-     * 停止录制视频
-     */
-    public void stopRecord() {
-        if (mediaRecorder != null) {
-            // 设置后不会崩
-            mediaRecorder.setOnErrorListener(null);
-            mediaRecorder.setPreviewDisplay(null);
-            //停止录制
-            mediaRecorder.stop();
-            mediaRecorder.reset();
-            //释放资源
-            mediaRecorder.release();
-            mediaRecorder = null;
-
-            mRecordTime.stop();
-/*            //设置开始按钮可点击，停止按钮不可点击
-            mRecordControl.setEnabled(true);
-           // mPauseRecord.setEnabled(false);*/
-            //isRecording = false;
-        }
-    }
+//    /**
+//     * 释放摄像头资源
+//     *
+//     * @author liuzhongjun
+//     * @date 2016-2-5
+//     */
+//    protected void stopCamera() {
+//        if (mCamera != null) {
+//            mCamera.setPreviewCallback(null);
+//            mCamera.stopPreview();
+//            mCamera.release();
+//            mCamera = null;
+//        }
+//    }
+//    /**
+//     * 停止录制视频
+//     */
+//    public void stopRecord() {
+//        if (mediaRecorder != null) {
+//            // 设置后不会崩
+//            mediaRecorder.setOnErrorListener(null);
+//            mediaRecorder.setPreviewDisplay(null);
+//            //停止录制
+//            mediaRecorder.stop();
+//            mediaRecorder.reset();
+//            //释放资源
+//            mediaRecorder.release();
+//            mediaRecorder = null;
+//
+//            mRecordTime.stop();
+///*            //设置开始按钮可点击，停止按钮不可点击
+//            mRecordControl.setEnabled(true);
+//           // mPauseRecord.setEnabled(false);*/
+//            //isRecording = false;
+//        }
+//    }
 
     //处理权限被授予或者拒绝后，需要进行的操作
     @Override

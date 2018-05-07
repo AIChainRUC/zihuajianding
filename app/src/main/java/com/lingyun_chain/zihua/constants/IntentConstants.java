@@ -7,7 +7,7 @@ package com.lingyun_chain.zihua.constants;
  */
 public class IntentConstants {
     //拍照对应RequestCode
-    public static final int SELECT_PIC_BY_TACK_PHOTO = 1;
+    public static final int SELECT_PIC_BY_TACK_PHOTO = 1;//拍摄人脸
     public static final int SELECT_PIC_BY_TACK_PHOTO_SEAL = 2;//印章拍照
     public static final int SELECT_PIC_BY_TACK_PHOTO_IMAGE = 3;//图片拍照
     public static final int RECORD_SYSTEM_VIDEO = 4;//录制视频

@@ -15,6 +15,7 @@ import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.fragement.MyFragement;
 import com.lingyun_chain.zihua.fragement.ShouYeFragement;
 import com.lingyun_chain.zihua.receiver.NetWorkChangerReceiver;
+import com.tencent.bugly.Bugly;
 
 /**
  * 主界面
@@ -36,6 +37,7 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
         setContentView(R.layout.activity_main);
+        Bugly.init(getApplicationContext(), "8d5b7b67b2", false);//初始化Bugly
         //初始化标题栏
         initToolbar();
         //初始化view

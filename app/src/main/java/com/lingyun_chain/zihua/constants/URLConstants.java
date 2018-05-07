@@ -14,9 +14,9 @@ public class URLConstants {
     public static final String CreateCertificateURL = "/channels/mychannel/chaincodes/urcc/createCertificate";//生成数字证书
     public static final String CreateAssetURL = "/channels/mychannel/chaincodes/urcc/createAsset";//字画存链
     public static final String SaveURL = "/save";//印章特征提取
-    public static final String RetrieveFeatureURL = "/channels/mychannel/chaincodes/urcc/retrieveFeature";//获取链上字画印章特征
+    public static final String RetrieveFeatureURL = "/channels/mychannel/chaincodes/urcc/retrieveFeature";//根据assetID获取链上字画印章特征
     public static final String CheckURL = "/check";//短视频验证，活体验证
     public static final String RetrieveUserFeature = "/channels/mychannel/chaincodes/urcc/retrieveUserFeature";//证书使用，查找链上人脸特征
-    public static final String UploadPicture = "/upload";
-    public static final String HashURL = "/hash";
+    public static final String UploadPicture = "/upload/";//上传图片
+    public static final String HashURL = "/hash";//字画鉴定
 }

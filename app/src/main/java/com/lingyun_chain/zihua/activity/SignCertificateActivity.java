@@ -46,10 +46,11 @@ public class SignCertificateActivity extends BaseActivity {
     private String generateFaceFeature = null;//人脸特征
     //private TextView sign_certi_text;
     private String featureFace = "1111111";
-    private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
-    private JCameraView jCameraView;
-    private boolean granted = false;
 
+    private final int GET_PERMISSION_REQUEST = 100; //权限申请自定义码
+
+    private JCameraView jCameraView;//用于录制视频
+    private boolean granted = false;//授权
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,10 +70,10 @@ public class SignCertificateActivity extends BaseActivity {
             generateCertificate = sharedPreference.getString("generateCertificate", "default");
             generateFaceFeature = sharedPreference.getString("generateFaceFeature", "default");
         }
-        jCameraView.setSaveVideoPath(FileUtil.getPath());
-        jCameraView.setFeatures(JCameraView.BUTTON_STATE_ONLY_RECORDER);
+        jCameraView.setSaveVideoPath(FileUtil.getPath());//设置视频保存路径
+        jCameraView.setFeatures(JCameraView.BUTTON_STATE_ONLY_RECORDER);//仅录像
         getPermissions();
-        jCameraView.setJCameraLisenter(new JCameraListener() {
+        jCameraView.setJCameraLisenter(new JCameraListener() {//录制视频成功
 
             @Override
             public void captureSuccess(Bitmap bitmap) {
@@ -224,7 +225,7 @@ public class SignCertificateActivity extends BaseActivity {
         jCameraView.onPause();
     }
 
-    public class AsyFaceVerTask extends BaseAsyTask {
+    public class AsyFaceVerTask extends BaseAsyTask {//活体验证
         private String status = "-1";
 
         public AsyFaceVerTask(Context context, String string, String... params) {

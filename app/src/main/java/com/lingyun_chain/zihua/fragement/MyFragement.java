@@ -27,13 +27,16 @@ import java.io.File;
  * 实现清除缓存，意见反馈，关于我们，帮助和退出登陆的功能
  */
 public class MyFragement extends BaseFragement implements View.OnClickListener {
+
     private RelativeLayout tv_advice;
     private RelativeLayout contact_our;
     private RelativeLayout helpRelative;
     private RelativeLayout layout_catch;
+
     private TextView cahchSize;
     //private Button logOut;
     String fizeSize = "0B";
+
     private Boolean isSdExist;
 
     @Nullable
@@ -88,7 +91,7 @@ public class MyFragement extends BaseFragement implements View.OnClickListener {
 //            case R.id.logOut:
 //                startActivity(new Intent(getActivity(), LoginActivity.class));
 //                getActivity().finish();
-            case R.id.layout_cache:
+            case R.id.layout_cache://清除缓存功能
                 AlertDialog.Builder dialog = new AlertDialog.Builder(getActivity());
                 dialog.setMessage("要清除缓存吗？");
                 dialog.setNegativeButton("取消", new DialogInterface.OnClickListener() {

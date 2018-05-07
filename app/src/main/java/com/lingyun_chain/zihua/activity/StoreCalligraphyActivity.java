@@ -68,7 +68,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     private String subjectWork = null;
     private String desc = "default";//书画基本信息
     private String delcare = "default";//制式声明
-    private String featureSeal = "123456";//印章的特征值
+    private String featureSeal = "default";//印章的特征值
     private String picHash = "default";//画全图的哈希值
     private String sig_r = "default"; //ecbsa签名_r
     private String sig_s = "default";//ecbsa签名_s
@@ -79,6 +79,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     //private boolean isFaceVer = false;//是否进行了活体验证
     private String assetID = "default";//数字资产在区块链上的键值
     private String assetFilePath;//存链后用于上传字画照片到服务器
+    private boolean isStored = false;//存链是否成功
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -133,7 +134,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.store_text_key:
+            case R.id.store_text_key://生成证书
 //                ECDSAUtil.jdkECDSA("hello","-----BEGIN PRIVATE KEY-----\n" +
 //                        "MIGHAgEAMBMGByqGSM49AgEGCCqGSM49AwEHBG0wawIBAQQg2s37G4uKJImgCkuj\n" +
 //                        "800/f/Z/475+NTqZAbslXVOdmhmhRANCAASOqTlpV9ABI/l5nqIqKtQhERcCJiXz\n" +
@@ -142,7 +143,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
 //                        "\n");
                 startActivityForResult(new Intent(StoreCalligraphyActivity.this, GenerateCertificateActivity.class), IntentConstants.GO_TO_KEY);
                 break;
-            case R.id.store_submit:
+            case R.id.store_submit://字画存链
                 store_workName = store_workName_edt.getText().toString().trim();
                 store_workSize = subjectWork_edt.getText().toString().trim();
                 creationYear = creationYear_edt.getText().toString().trim();
@@ -157,15 +158,19 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                         && !classificationWork.isEmpty()
                         && !materialWork.isEmpty()
                         && !subjectWork.isEmpty()
-                        && !featureSeal.isEmpty()
+                        && !TextUtils.equals(featureSeal, "default")
                         && !TextUtils.equals(picHash, "default")) {
                     //desc = store_workName + " " + store_workSize + " " + " " + creationYear + " " + classificationWork + " " + materialWork + " " + subjectWork;
                     desc = StringUtil.stringDescToJson(store_workName, store_workSize, creationYear, classificationWork, materialWork, subjectWork);//书画基本信息转化为json格式
                     assetID = SHAUtil.getSHA256StrJava(desc + generatePublicKey + delcare + featureSeal + picHash);//资产唯一的键值,留给用户看的
-                    String signAsset = ECDSAUtil.sign(generatePrivateKey,assetID);//对资产ID进行签名
+                    String signAsset = ECDSAUtil.sign(generatePrivateKey, assetID);//对资产ID进行签名
                     String jsonData = StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json//stringToJson(assetID,desc,generatePublicKey,delcare,featureSeal,picHash,sig_r,sig_s);
-                    new AsyCreateAsset(StoreCalligraphyActivity.this,
-                            "StoreCalligraphy", jsonData).execute();
+                    if (isStored == true) {//存链成功，仅上传图片
+                        new AsyUploadImageTask(StoreCalligraphyActivity.this, "AsyUploadImageTask", assetFilePath, assetID).execute();//图片上传失败，需要再次上传
+                    } else {//否则，先存链
+                        new AsyCreateAssetTask(StoreCalligraphyActivity.this,
+                                "AsyCreateAssetTask", jsonData).execute();//直接存链
+                    }
 //                    if (isFaceVer == true) {
 //                        //String signAsset=ECDSAUtil.sign(assetID, generatePrivateKey);//对资产ID进行签名
 //                        //StringUtil.stringDateToJson(assetID, desc, generatePublicKey, delcare, featureSeal, picHash, signAsset);//把需要发送的数据打包成json
@@ -191,7 +196,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     UiUtils.show("请补充完整全部信息");
                 }
                 break;
-            case R.id.store_image_submit:
+            case R.id.store_image_submit://上传照片
                 BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                     @Override
                     public void onGranted() {
@@ -205,7 +210,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                     }
                 });
                 break;
-            case R.id.store_seal_submit:
+            case R.id.store_seal_submit://上传印章
                 BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
                     @Override
                     public void onGranted() {
@@ -252,7 +257,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE) {
+            if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_IMAGE) {//获取图片的hash
 //                String[] pojo = {MediaStore.Images.Media.DATA};
 //                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
 //                if (cursor != null) {
@@ -281,7 +286,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
                         e.printStackTrace();
                     }
                 }
-            } else if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {
+            } else if (requestCode == IntentConstants.SELECT_PIC_BY_TACK_PHOTO_SEAL) {//上传印章
 //                String[] pojo = {MediaStore.Images.Media.DATA};
 //                Cursor cursor = managedQuery(photoUri, pojo, null, null, null);
 //                if (cursor != null) {
@@ -293,7 +298,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
 //                    }
 //                }
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
-                    new AsySaveTask(this, "StoreCalligSave", picPath).execute();
+                    new AsySaveTask(this, "AsySaveTask", picPath).execute();//提取印章特征值
                 }
             } else if (requestCode == IntentConstants.GO_TO_KEY) {
                 store_text_key.setText("密钥文件已上传");
@@ -304,7 +309,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    public class AsySaveTask extends BaseAsyTask {
+    public class AsySaveTask extends BaseAsyTask {//提取印章特征值
         private String status = "-1";
 
         public AsySaveTask(Context context, String string, String... params) {
@@ -352,11 +357,11 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    public class AsyCreateAsset extends BaseAsyTask {
+    public class AsyCreateAssetTask extends BaseAsyTask {
         private String status = "-1";
 
 
-        public AsyCreateAsset(Context context, String string, String... params) {
+        public AsyCreateAssetTask(Context context, String string, String... params) {
             super(context, string, params);
         }
 
@@ -366,7 +371,8 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络有问题，请稍候再试");
             } else if (TextUtils.equals(s, "200")) {
-                new AsyUploadImageTask(StoreCalligraphyActivity.this, "AsyUploadImageTask", assetFilePath, assetID).execute();
+                isStored = true;//印章上传成功
+                new AsyUploadImageTask(StoreCalligraphyActivity.this, "AsyUploadImageTask", assetFilePath, assetID).execute();//上传图片
                 //finish();
             } else {
                 UiUtils.show("存链失败，请重试");
@@ -392,7 +398,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
         }
     }
 
-    public class AsyUploadImageTask extends BaseAsyTask {
+    public class AsyUploadImageTask extends BaseAsyTask {//上传图片
         private String status = "-1";
 
         public AsyUploadImageTask(Context context, String string, String... params) {
@@ -422,7 +428,6 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             try {
                 if (okHttpClient != null) {
                     response = okHttpClient.newCall(request).execute();
-                    LogUtils.d("response", response.toString());
                     string = response.body().string();
                     jsonObject = new JSONObject(string);
                     status = jsonObject.optString("code");

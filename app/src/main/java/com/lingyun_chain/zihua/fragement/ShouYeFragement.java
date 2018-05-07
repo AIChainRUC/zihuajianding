@@ -49,16 +49,12 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
     private View view;//整个界面的view
     private List<HomeCarousel> picDatas;//图片地址和链接的集合
     private ListView main_list;
-    /**
-     * 上一个页面的位置
-     */
-    protected int lastPosition = 0;
-    /**
-     * 判断是否自动滚动
-     */
-    private boolean isRunning = false;
+    protected int lastPosition = 0;//上一个页面的位置
+    private boolean isRunning = false;//判断是否自动滚动
     private AuToRunTask runTask;
+
     private MyHomeListAdapter adapter;
+
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书
@@ -76,15 +72,12 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
         main_list = (ListView) view.findViewById(R.id.main_list);
         vpHomeTitle = (ViewPager) view.findViewById(R.id.vp_home_title);
         pointGroup = (LinearLayout) view.findViewById(R.id.point_group);
+
         sharedPreference = PreferenceManager.getDefaultSharedPreferences(getActivity());
         editor = sharedPreference.edit();
-        if (sharedPreference != null) {
-            generatePublicKey = sharedPreference.getString("generatePublicKey", "default");
-            generatePrivateKey = sharedPreference.getString("generatePrivateKey", "default");
-            generateCertificate = sharedPreference.getString("generateCertificate", "default");
-            generateFaceFeature = sharedPreference.getString("generateFaceFeature", "default");
-        }
+
         initListView();
+
         if (picDatas == null) {
             //如果没有数据，就从网络中获取
             initImageUrl();
@@ -204,27 +197,41 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+
         switch (position) {
             case 0:
+                if (sharedPreference != null) {
+                    generatePublicKey = sharedPreference.getString("generatePublicKey", "default");
+                    generatePrivateKey = sharedPreference.getString("generatePrivateKey", "default");
+                    generateCertificate = sharedPreference.getString("generateCertificate", "default");
+                    generateFaceFeature = sharedPreference.getString("generateFaceFeature", "default");
+                }
                 if (!TextUtils.equals(generatePublicKey, "default") && !TextUtils.equals(generatePrivateKey, "default")) {
-                    startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));
-                    //new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
-//                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                    builder.setTitle("温馨提示");
-//                    builder.setMessage("为了保证您的安全，我们建议您拍摄含眨眼动作的短视频进行人脸识别");
+                    //startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));
+                  //  new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();//根据证书拿到人脸特征
+                    if(!TextUtils.equals(generatePublicKey, "default")){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                        builder.setTitle("温馨提示");
+                        builder.setMessage("为了保证您的安全，我们建议您拍摄缓慢眨眼动作的短视频进行人脸识别");
 ////                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 ////                    @Override
 ////                    public void onClick(DialogInterface dialog, int which) {
 ////                        UiUtils.show("对不起，请您先进行人脸识别");
 ////                    }
-////                });
-//                    builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface dialog, int which) {
-//                            startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
-//                        }
-//                    });
-//                    builder.create().show();
+//              });
+                        builder.setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //  new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+                                startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
+                            }
+                        });
+                        builder.create().show();
+                    }else {
+                        UiUtils.show("对不起，请您先生成证书");
+                        startActivityForResult(new Intent(getActivity(), GenerateCertificateActivity.class), IntentConstants.GO_TO_KEY);
+                    }
                     // startActivityForResult(new Intent(getActivity(), StoreCalligraphyActivity.class), GO_TO_FACE);//字画存链
                 } else {
                     //还没有从服务器拿到证书
@@ -298,24 +305,24 @@ public class ShouYeFragement extends BaseFragement implements AdapterView.OnItem
                 generatePrivateKey = data.getStringExtra("generatePrivateKey");
                 generateCertificate = data.getStringExtra("generateCertificate");
                 generateFaceFeature = data.getStringExtra("generateFaceFeature");
-                new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
-//                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//                builder.setTitle("温馨提示");
-//                builder.setMessage("为了保证您的安全，我们建议您拍摄含眨眼动作的短视频进行人脸识别");
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("温馨提示");
+                builder.setMessage("为了保证您的安全，我们建议您拍摄缓慢眨眼动作的短视频进行人脸识别");
 ////                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 ////                    @Override
 ////                    public void onClick(DialogInterface dialog, int which) {
 ////                        UiUtils.show("对不起，请您先进行人脸识别");
 ////                    }
-////                });
-//                builder.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialog, int which) {
-//                        new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
-//                        //startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
-//                    }
-//                });
-//                builder.create().show();
+//              });
+                builder.setPositiveButton("我知道了", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        //  new AsyUserFeatureTask(getActivity(), "AsyUserFeatureTask", generateCertificate).execute();
+                        startActivityForResult(new Intent(getActivity(), SignCertificateActivity.class), IntentConstants.GO_TO_FACE);//
+                    }
+                });
+                builder.create().show();
                 //startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));//字画存链
             } else if (requestCode == IntentConstants.GO_TO_FACE) {
                 startActivity(new Intent(getActivity(), StoreCalligraphyActivity.class));

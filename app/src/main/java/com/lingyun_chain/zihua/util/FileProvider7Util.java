@@ -10,7 +10,7 @@ import java.io.File;
 /**
  * author: anapodoton
  * created on: 2018/4/17 10:12
- * description:  android n适配
+ * description:  android n适配，由于不能直接使用URI
  */
 public class FileProvider7Util {
     public static Uri getUriForFile(Context context, File file) {

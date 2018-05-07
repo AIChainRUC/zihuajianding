@@ -72,7 +72,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 
     private TextView generate_text;//人脸照片上传成功后，对用户的提示
 
-    private String generateFaceFeature="123456";//人脸特征
+    private String generateFaceFeature =null;//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书
@@ -206,7 +206,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 //                }
                 //picPath = FileUtil.getPath() + "img/generatePhoto" + "/face.jpg";
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
-                    new AsyGenerateFace(GenerateCertificateActivity.this, "GenerateFace", picPath).execute();
+                    new AsyGenerateFaceTask(GenerateCertificateActivity.this, "AsyGenerateFaceTask", picPath).execute();
 
                 } else {
                     //错误提示
@@ -382,11 +382,11 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 //        }
 //    }
 
-    public class AsyGenerateFace extends BaseAsyTask {
+    public class AsyGenerateFaceTask extends BaseAsyTask {//生成人脸特征值
         private String status = "-1";
         private File mFile;
 
-        public AsyGenerateFace(Context context, String string, String... params) {
+        public AsyGenerateFaceTask(Context context, String string, String... params) {
             super(context, string, params);
         }
 
@@ -460,7 +460,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         }
     }
 
-    public class AsyCreateCertificateTask extends BaseAsyTask {
+    public class AsyCreateCertificateTask extends BaseAsyTask {//生成证书
         private String status = "-1";
 
         public AsyCreateCertificateTask(Context context, String string, String... params) {
@@ -496,12 +496,11 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
         }
 
         @Override
-        protected String doInBackground(String... strings) {
+        protected String doInBackground(String... strings) {//获取服务器返回结果
             try {
                 if (okHttpClient != null) {
                     response = okHttpClient.newCall(request).execute();
                 }
-                response = okHttpClient.newCall(request).execute();
                 string = response.body().string();
                 jsonObject = new JSONObject(string);
                 status = jsonObject.optString("code");
@@ -513,14 +512,13 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            okHttpClient.dispatcher().cancelAll();
-            okHttpClient.connectionPool().evictAll();
+//            okHttpClient.dispatcher().cancelAll();
+//            okHttpClient.connectionPool().evictAll();
             return status;
         }
     }
 
     byte[] byt;
-
     //图片转为字节流
     public byte[] getFileByte(File file) {
         try {
