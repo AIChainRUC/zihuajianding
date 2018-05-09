@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -72,7 +73,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 
     private TextView generate_text;//人脸照片上传成功后，对用户的提示
 
-    private String generateFaceFeature =null;//人脸特征
+    private String generateFaceFeature ="12345556";//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书
@@ -118,12 +119,17 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //generate_gender_string = generate_gender_spinner.getItemAtPosition(position).toString();
-                generate_gender_string = "male";
+                if(TextUtils.equals(generate_gender_string,"男")){
+                    generate_gender_string = "male";
+                }else{
+                    generate_gender_string = "female";
+
+                }
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-                generate_gender_string = "female";
+                generate_gender_string = "male";
             }
         });
 

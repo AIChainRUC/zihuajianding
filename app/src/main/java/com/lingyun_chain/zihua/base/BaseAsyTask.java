@@ -98,7 +98,7 @@ public class BaseAsyTask extends AsyncTask<String, String, String> {
                 userGender = params[3];
                 URL = URLConstants.ServerURL + URLConstants.BlockPort + URLConstants.CreateCertificateURL;
                 dialogInfo = "数字证书生成中，请稍候...";
-                desc = userName + " " + userGender + " " + " " + userDate;
+                desc = userName + " " + userGender + " "  + userDate;
                 builder = new FormBody.Builder();
                 builder.add("feature", faceFeature);
                 builder.add("desc", desc);
