@@ -13,8 +13,10 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.lingyun_chain.zihua.R;
 import com.lingyun_chain.zihua.base.BaseActivity;
 import com.lingyun_chain.zihua.base.BaseAsyTask;
@@ -33,6 +35,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import static com.lingyun_chain.zihua.constants.URLConstants.DownLoadURL;
+import static com.lingyun_chain.zihua.constants.URLConstants.ServerURL;
+import static com.lingyun_chain.zihua.constants.URLConstants.UploadPort;
 
 /**
  * 实现字画鉴定功能
@@ -57,6 +63,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
 
     private Boolean isHaveSeal = false;//印章是否上传
 
+    private ImageView downloadImage;//下载的图片
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +88,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
         //identify_seal_decribal.setOnClickListener(this);
         identify_seal_btn = (Button) findViewById(R.id.identify_seal_btn);
         identify_seal_btn.setOnClickListener(this);
+        downloadImage = (ImageView) findViewById(R.id.downloadImage);
     }
 
     private void initToolbar() {
@@ -116,9 +124,10 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                     && !TextUtils.equals(sealDecribal, "default")
                     && !TextUtils.equals(picPath, "default")) {
                 new AsyRetrieveFeatureTask(IdentifyCalligraphyActivity.this, "AsyRetrieveFeatureTask", sealKeyValue).execute();
-
+                //Glide.with(IdentifyCalligraphyActivity.this).load(ServerURL+UploadPort+DownLoadURL+sealKeyValue+".jpg").into(downloadImage);
             } else {
                 UiUtils.show("请补充完整所有信息！！");
+                //Glide.with(IdentifyCalligraphyActivity.this).load(ServerURL+UploadPort+DownLoadURL+sealKeyValue+".jpg").into(downloadImage);
             }
         } else if (v.getId() == R.id.identify_image_text) {//上传字画图片
             BaseActivity.requestRuntimePermission(new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE}, new PermissionListener() {
@@ -132,6 +141,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                     dialog(IdentifyCalligraphyActivity.this, "上传照片需要该权限，拒绝后将不能正常使用，是否重新开启此权限？");
                 }
             });
+
         }
     }
 
@@ -239,6 +249,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
 
     public class AsyHashTask extends BaseAsyTask {//字画鉴定
         private String status = "-1";
+        private String pass = "No";
 
         public AsyHashTask(Context context, String string, String... params) {
             super(context, string, params);
@@ -249,15 +260,23 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
             super.onPostExecute(s);
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络超时，请重试");
-            } else if (TextUtils.equals(s, "200")) {
-                UiUtils.show("恭喜您，字画鉴定成功！！！");
-                finish();
-            } else {
-                UiUtils.show("对不起，字画鉴定失败！！！请您核对后重新提交");
-                identify_seal_text.setText("请重新上传照片");
-                identify_seal_text.setEnabled(true);
-                identify_seal_keyValue.setText("");
-                identify_seal_decribal.setText("");
+            }
+//            } else if (TextUtils.equals(s, "200")) {
+//
+//                UiUtils.show("恭喜您，字画鉴定成功！！！");
+//                finish();
+//            }
+             else {
+                if(TextUtils.equals(pass, "Yes")){
+                    UiUtils.show("恭喜您，字画鉴定成功！！！");
+                    finish();
+                }else {
+                    UiUtils.show("对不起，字画鉴定失败！！！请您核对后重新提交");
+                    identify_seal_text.setText("请重新上传照片");
+                    identify_seal_text.setEnabled(true);
+                    identify_seal_keyValue.setText("");
+                    identify_seal_decribal.setText("");
+                }
             }
         }
 
@@ -268,6 +287,7 @@ public class IdentifyCalligraphyActivity extends BaseActivity implements View.On
                 string = response.body().string();
                 jsonObject = new JSONObject(string);
                 status = jsonObject.optString("code");
+                pass = jsonObject.optString("pass");
             } catch (IOException e) {
                 e.printStackTrace();
                 //LogUtils.d("hjs",e.toString());

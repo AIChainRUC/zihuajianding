@@ -19,4 +19,5 @@ public class URLConstants {
     public static final String RetrieveUserFeature = "/channels/mychannel/chaincodes/urcc/retrieveUserFeature";//证书使用，查找链上人脸特征
     public static final String UploadPicture = "/upload/";//上传图片
     public static final String HashURL = "/hash";//字画鉴定
+    public static final String DownLoadURL="/download/";//下载图片
 }

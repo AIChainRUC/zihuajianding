@@ -371,7 +371,7 @@ public class StoreCalligraphyActivity extends BaseActivity implements View.OnCli
             if (TextUtils.equals(s, "-1")) {
                 UiUtils.show("网络有问题，请稍候再试");
             } else if (TextUtils.equals(s, "200")) {
-                isStored = true;//印章上传成功
+                isStored = true;//存链成功
                 new AsyUploadImageTask(StoreCalligraphyActivity.this, "AsyUploadImageTask", assetFilePath, assetID).execute();//上传图片
                 //finish();
             } else {

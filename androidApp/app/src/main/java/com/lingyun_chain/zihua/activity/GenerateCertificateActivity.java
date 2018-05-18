@@ -34,6 +34,7 @@ import com.lingyun_chain.zihua.util.ButtonUtil;
 import com.lingyun_chain.zihua.util.FileProvider7Util;
 import com.lingyun_chain.zihua.util.OSutil;
 import com.lingyun_chain.zihua.util.RegularUtil;
+import com.lingyun_chain.zihua.util.SystemUtils;
 import com.lingyun_chain.zihua.util.UiUtils;
 
 import org.json.JSONException;
@@ -73,7 +74,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 
     private TextView generate_text;//人脸照片上传成功后，对用户的提示
 
-    private String generateFaceFeature ="12345556";//人脸特征
+    private String generateFaceFeature = null;//人脸特征
     private String generatePublicKey = null;//公钥
     private String generatePrivateKey = null;//私钥
     private String generateCertificate = null;//证书
@@ -119,9 +120,9 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 //generate_gender_string = generate_gender_spinner.getItemAtPosition(position).toString();
-                if(TextUtils.equals(generate_gender_string,"男")){
+                if (TextUtils.equals(generate_gender_string, "男")) {
                     generate_gender_string = "male";
-                }else{
+                } else {
                     generate_gender_string = "female";
 
                 }
@@ -211,9 +212,9 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
 //                    }
 //                }
                 //picPath = FileUtil.getPath() + "img/generatePhoto" + "/face.jpg";
+                picPath=getIntent().getStringExtra("imageUrl");
                 if (picPath != null && (picPath.endsWith(".png") || picPath.endsWith(".PNG") || picPath.endsWith(".jpg") || picPath.endsWith(".JPG"))) {
                     new AsyGenerateFaceTask(GenerateCertificateActivity.this, "AsyGenerateFaceTask", picPath).execute();
-
                 } else {
                     //错误提示
                     UiUtils.show("拍照失败");
@@ -525,6 +526,7 @@ public class GenerateCertificateActivity extends BaseActivity implements View.On
     }
 
     byte[] byt;
+
     //图片转为字节流
     public byte[] getFileByte(File file) {
         try {
