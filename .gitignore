@@ -9,4 +9,5 @@
 /captures
 .externalNativeBuild
 node_modules
-
+*.pyc
+*.npy
