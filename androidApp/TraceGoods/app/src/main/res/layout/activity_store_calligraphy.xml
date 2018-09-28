@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.StoreCalligraphyActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_store_calligraphy"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_hue">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/storeToBlcokchain"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+    </android.support.v7.widget.Toolbar>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="20dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="密钥文件:" />
+
+                <TextView
+                    android:id="@+id/store_text_key"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:gravity="center"
+                    android:text="对不起,我们未找到密钥文件,点我去生成!!!"
+                    android:textColor="@color/main_hue" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/identificationGoodsImage" />
+
+                <TextView
+                    android:id="@+id/store_image_submit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="请上传商品图片"
+                    android:textColor="@color/main_hue"
+                    android:textSize="25sp" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/identificationGoodsImageDetail" />
+
+                <TextView
+                    android:id="@+id/store_image_submit_detail"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/identificationUploadGoodsImageDetail"
+                    android:textColor="@color/main_hue"
+                    android:textSize="25sp" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/goodsName" />
+
+                <EditText
+                    android:id="@+id/store_workName_edt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:hint="@string/goodsNameInput" />
+            </LinearLayout>
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:layout_marginRight="20dp"-->
+                <!--android:orientation="horizontal">-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="作品尺寸:" />-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/store_workSize_edt"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:hint="请输入作品尺寸" />-->
+            <!--</LinearLayout>-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/goodsTime" />
+
+                <EditText
+                    android:id="@+id/creationYear_edt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:hint="@string/goodsTimeInput" />
+            </LinearLayout>
+
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:layout_marginRight="20dp"-->
+                <!--android:orientation="horizontal">-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="作品材质:" />-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/materialWork_edt"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:hint="请输入作品作品材质" />-->
+            <!--</LinearLayout>-->
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:layout_marginTop="10dp"-->
+                <!--android:layout_marginRight="20dp"-->
+                <!--android:orientation="horizontal">-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="作品题材:" />-->
+
+                <!--<EditText-->
+                    <!--android:id="@+id/subjectWork_edt"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:hint="请输入作品作品题材" />-->
+            <!--</LinearLayout>-->
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/companyName" />
+
+                <EditText
+                    android:id="@+id/company_edt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:hint="@string/companyNameInput" />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/productionBatch" />
+
+                <EditText
+                    android:id="@+id/productionBatch_edt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:hint="@string/productionBatchInput" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:text="@string/goodsClassify" />
+
+                <EditText
+                    android:id="@+id/classificationWork_edt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:hint="@string/goodsClassifyInput" />
+            </LinearLayout>
+
+            <!--<LinearLayout-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginLeft="20dp"-->
+                <!--android:layout_marginTop="15dp"-->
+                <!--android:layout_marginRight="20dp"-->
+                <!--android:orientation="horizontal">-->
+
+                <!--<TextView-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="作品印章:" />-->
+
+                <!--<TextView-->
+                    <!--android:id="@+id/store_seal_submit"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_gravity="center"-->
+                    <!--android:gravity="center"-->
+                    <!--android:text="点击上传印章"-->
+                    <!--android:textColor="@color/main_hue"-->
+                    <!--android:textSize="25sp" />-->
+            <!--</LinearLayout>-->
+            <!--<TextView-->
+                <!--android:id="@+id/assetId_help"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:textColor="@color/main_hue"-->
+                <!--android:text="@string/assetId_help"-->
+                <!--android:visibility="gone"/>-->
+
+            <!--<TextView-->
+                <!--android:id="@+id/store_assetId"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_gravity="center"-->
+                <!--android:textColor="@color/main_hue"-->
+                <!--android:gravity="center"-->
+                <!--android:textIsSelectable="true"-->
+                <!--android:textSize="25sp"-->
+                <!--android:visibility="gone"/>-->
+            <Button
+                android:id="@+id/store_submit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:background="@color/main_hue"
+                android:text="@string/storeToBlcokchain"
+                android:textColor="@color/text_color"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="50dp" />
+        </LinearLayout>
+    </ScrollView>
+</LinearLayout>

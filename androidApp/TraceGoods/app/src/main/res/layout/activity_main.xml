@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--主Activity的布局-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.lingyun_chain.traceGoodsSeller.activity.MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_hue">
+
+        <TextView
+            android:id="@+id/toolbarTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="字画鉴定"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+    </android.support.v7.widget.Toolbar>
+
+    <FrameLayout
+        android:id="@+id/main_content"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
+
+    <RadioGroup
+        android:id="@+id/tab_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#FFFFFF"
+        android:gravity="bottom"
+        android:orientation="horizontal">
+        <!--首页-->
+        <RadioButton
+            android:id="@+id/shouye"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:checked="true"
+            android:drawableTop="@drawable/tab_selector_shouye"
+            android:gravity="center_horizontal|bottom"
+            android:paddingTop="5dp"
+            android:text="首页"
+            android:textColor="@color/tab_selector_tv_color" />
+
+        <!--收款-->
+        <RadioButton
+            android:id="@+id/my"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:button="@null"
+            android:drawableTop="@drawable/tab_selector_my"
+            android:gravity="center_horizontal|bottom"
+            android:paddingTop="5dp"
+            android:text="我的"
+            android:textColor="@color/tab_selector_tv_color" />
+
+    </RadioGroup>
+
+</LinearLayout>

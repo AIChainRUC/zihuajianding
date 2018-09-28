@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AdvicesActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_generate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_hue">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="证书生成"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+    </android.support.v7.widget.Toolbar>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="姓        名"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/generate_name_edt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:hint="请输入您的姓名"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="性        别"
+            android:textSize="20sp" />
+
+        <Spinner
+            android:id="@+id/generate_gender_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginLeft="60dp"
+            android:entries="@array/generate_gender_spinner"
+            android:gravity="center"></Spinner>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="出生年月"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/generate_date_edt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:gravity="center"
+            android:hint="格式：20180206"
+            android:singleLine="true" />
+    </LinearLayout>
+
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_marginTop="10dp"-->
+        <!--android:layout_marginRight="20dp"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="上传人脸照片"-->
+            <!--android:textSize="20sp" />-->
+
+        <!--<Button-->
+            <!--android:id="@+id/generate_camera"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="20dp"-->
+            <!--android:background="@color/main_hue"-->
+            <!--android:text="拍照"-->
+            <!--android:textColor="#fff" />-->
+        <!--<TextView-->
+            <!--android:id="@+id/generate_text"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:visibility="gone"-->
+            <!--android:gravity="center"-->
+            <!--android:textColor="@color/main_hue" />-->
+    <!--</LinearLayout>-->
+    <!--<ImageView-->
+    <!--android:id="@+id/generate_ima"-->
+    <!--android:layout_width="wrap_content"-->
+    <!--android:layout_height="wrap_content"-->
+    <!--android:layout_marginLeft="30dp"-->
+    <!--android:layout_marginRight="30dp"-->
+    <!--android:layout_marginTop="10dp"-->
+    <!--android:layout_gravity="center"-->
+    <!--android:visibility="invisible"/>-->
+
+    <Button
+        android:id="@+id/generate_submit_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="30dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="30dp"
+        android:background="@color/main_hue"
+        android:text="生成证书"
+        android:textColor="#fff" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="30dp" />
+
+</LinearLayout>

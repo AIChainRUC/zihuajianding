@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.AdvicesActivity">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar_Identify_call"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/main_hue">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="@string/goodsIdentification"
+            android:textColor="#fff"
+            android:textSize="20sp" />
+    </android.support.v7.widget.Toolbar>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/identificationGoodsImageDetail"/>
+
+        <TextView
+            android:id="@+id/identify_seal_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/identificationUploadGoodsImageDetail"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:textColor="@color/main_hue" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/identificationGoodsImage" />
+
+        <TextView
+            android:id="@+id/identify_image_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:text="@string/identificationUploadGoodsImage"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textSize="25sp"
+            android:textColor="@color/main_hue" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/identificationGoodsKey" />
+
+        <EditText
+            android:id="@+id/identify_seal_keyValue"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:hint="@string/identificationInputGoodsKey"
+            android:layout_gravity="center"
+            android:gravity="center" />
+        <!--<Button-->
+            <!--android:id="@+id/identify_seal_keyValue_btn"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content" -->
+            <!--android:text="验证键值"/>-->
+    </LinearLayout>
+    <!--<LinearLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginLeft="20dp"-->
+        <!--android:layout_marginRight="20dp"-->
+        <!--android:layout_marginTop="20dp"-->
+        <!--android:orientation="horizontal">-->
+
+        <!--<TextView-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:text="@string/identificationGoodsDescrible" />-->
+
+        <!--<EditText-->
+            <!--android:id="@+id/identify_seal_decribal"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginLeft="10dp"-->
+            <!--android:hint="@string/identificationGoodsDescribleInput"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center" />-->
+    <!--</LinearLayout>-->
+    <Button
+        android:id="@+id/identify_seal_btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="开始鉴定"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/text_color"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@color/main_hue"/>
+</LinearLayout>

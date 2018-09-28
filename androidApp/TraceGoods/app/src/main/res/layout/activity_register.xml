@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/background">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="30dp"
+            android:textColor="#FFFFFF"
+            android:layout_gravity="center"
+            android:layout_marginTop="-20dp"
+            android:text="注册"/>
+        <EditText
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:gravity="center"
+            android:hint="输入手机号"
+            android:textSize="20dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#B7B7B7"
+            android:id="@+id/et_userName"
+            android:background="@drawable/editsshape"
+            android:layout_marginTop="20dp"
+            android:singleLine="true"
+            android:layout_gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="10dp">
+            <EditText
+                android:id="@+id/verifycode"
+                android:layout_width="220dp"
+                android:layout_height="50dp"
+                android:background="@drawable/editsshape"
+                android:singleLine="true"/>
+
+            <Button
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:id="@+id/verify"
+                android:background="@drawable/buttonshape"
+                android:text="获取验证码"/>
+        </LinearLayout>
+
+
+        <EditText
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:id="@+id/et_password"
+            android:gravity="center"
+            android:hint="输入密码"
+            android:textSize="20dp"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#B7B7B7"
+            android:layout_marginTop="10dp"
+            android:inputType="textPassword"
+            android:background="@drawable/editsshape"/>
+
+        <EditText
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:id="@+id/et_password2"
+            android:gravity="center"
+            android:hint="确认密码"
+            android:textColor="#FFFFFF"
+            android:textColorHint="#B7B7B7"
+            android:inputType="textPassword"
+            android:textSize="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/editsshape"/>
+        <Button
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:id="@+id/register"
+            android:text="注册"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/buttonshape"/>
+        <Button
+            android:layout_width="320dp"
+            android:layout_height="50dp"
+            android:id="@+id/goLogin"
+            android:text="已有账号,直接登陆"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/buttonshape"/>
+    </LinearLayout>
+    <ProgressBar
+        android:layout_centerInParent="true"
+        android:id="@+id/customProgressBar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:indeterminate="false"
+        android:oneshot="false"
+        android:visibility="invisible"
+        android:indeterminateDrawable="@drawable/loading" />
+</RelativeLayout>
